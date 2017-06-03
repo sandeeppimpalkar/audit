@@ -1,0 +1,3059 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+      <link href="bootstrap/themes/mytheme.min.css" rel="stylesheet" type="text/css" />
+      <link href="bootstrap/themes/jquery.mobile.icons.min.css" rel="stylesheet" type="text/css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+      <script src="bootstrap/js/jquery-ui.js" type="text/javascript"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <style>
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even){background-color: #f2f2f2}
+
+    .right {
+    position: absolute;
+    right: 100px;
+    width: 300px;
+    border: 3px solid #73AD21;
+    padding: 10px;
+    color:Blue;
+    }
+
+    </style>
+     
+ 
+      <script type="text/javascript">
+          $(document).ready(function () {
+
+
+
+
+
+
+
+
+
+              // Swipe to remove list item
+              $(document).on("swipeleft swiperight", "#list li", function (event) {
+                  var listitem = $(this),
+                  // These are the classnames used for the CSS transition
+            dir = event.type === "swipeleft" ? "left" : "right",
+                  // Check if the browser supports the transform (3D) CSS transition
+            transition = $.support.cssTransform3d ? dir : false;
+                  confirmAndDelete(listitem, transition);
+              });
+              // If it's not a touch device...
+              if (!$.mobile.support.touch) {
+                  // Remove the class that is used to hide the delete button on touch devices
+                  $("#list").removeClass("touch");
+                  // Click delete split-button to remove list item
+                  $(".delete").on("click", function () {
+                      var listitem = $(this).parent("li");
+                      confirmAndDelete(listitem);
+                  });
+              }
+              function confirmAndDelete(listitem, transition) {
+                  // Highlight the list item that will be removed
+                  listitem.children(".ui-btn").addClass("ui-btn-active");
+                  // Inject topic in confirmation popup after removing any previous injected topics
+                  $("#confirm .topic").remove();
+                  listitem.find(".topic").clone().insertAfter("#question");
+                  // Show the confirmation popup
+                  $("#confirm").popup("open");
+                  // Proceed when the user confirms
+                  $("#confirm #yes").on("click", function () {
+                      // Remove with a transition
+                      if (transition) {
+                          listitem
+                          // Add the class for the transition direction
+                    .addClass(transition)
+                          // When the transition is done...
+                    .on("webkitTransitionEnd transitionend otransitionend", function () {
+                        // ...the list item will be removed
+                        listitem.remove();
+                        // ...the list will be refreshed and the temporary class for border styling removed
+                        $("#list").listview("refresh").find(".border-bottom").removeClass("border-bottom");
+                    })
+                          // During the transition the previous button gets bottom border
+                    .prev("li").children("a").addClass("border-bottom")
+                          // Remove the highlight
+                    .end().end().children(".ui-btn").removeClass("ui-btn-active");
+                      }
+                      // If it's not a touch device or the CSS transition isn't supported just remove the list item and refresh the list
+                      else {
+                          listitem.remove();
+                          $("#list").listview("refresh");
+                      }
+                  });
+                  // Remove active state and unbind when the cancel button is clicked
+                  $("#confirm #cancel").on("click", function () {
+                      listitem.children(".ui-btn").removeClass("ui-btn-active");
+                      $("#confirm #yes").off();
+                  });
+              }
+
+
+
+
+
+
+
+              var itemclicked = "";
+              var now = new Date();
+              var mMonth = now.getMonth() + 1;
+              var LogDetail = {};
+              LogDetail.LoginName = '';
+              LogDetail.LoginTime = now.getHours() + ":" + now.getMinutes();
+              var time = now.getHours() + ":" + now.getMinutes();
+              dnow = now.getFullYear() + '/' + mMonth + '/' + now.getDate();
+              $("#xdate").html(dnow);
+              $("#xtime").html(time);
+              $("#xuser").html("Sandeep");
+
+              $("#frmInciden_Compl_DOB").val("01/01/1900");
+              $("#frmInciden_witness_DOB").val("01/01/1900");
+              $("#frmInciden_suspect_DOB").val("01/01/1900");
+
+              var localdate = (now.getMonth() + 1) + '/' + now.getDate() + '/' + now.getFullYear(); // + ' ' +
+              $("#frmInciden_txtdate").val(localdate);
+              $("#frmInciden_txttime").val(now.getHours() + ':' + now.getMinutes() + ':32');
+              $("#frmInciden_txtdate").datepicker();
+
+
+              $.ajax({
+                  url: 'http://192.168.4.4/audit/MallServices.asmx/getActGroup',
+                  method: "POST",
+                  dataType: "json",
+                  success: function (data) {
+                      //this code is requred to use with dataType="text" and convert text to JSON Jquery Object for executing each statement
+                      var mySelect = $("#selectgrp");
+                      $(data).each(function (index, d) {
+                          mySelect.append('<option value = "' + d.ActivityGroup + '">' + d.ActivityGroupName + '</option>');
+                      });
+                  },
+                  error: function (data) {
+                      alert("ERROR");
+                  }
+
+              });
+
+              $("#OK").click(function () {                      s
+                  alert("OK");
+              });
+
+              $.ajax({
+                  url: 'http://192.168.4.4/audit/MallServices.asmx/getShift',
+                  method: "POST",
+                  dataType: "json",
+                  success: function (data) {
+                      //this code is requred to use with dataType="text" and convert text to JSON Jquery Object for executing each statement
+                      var mySelect = $("#selShift");
+                      var bmySelect = $("#LGBook_Shift");
+                      var ertmySelect = $("#ertLGBook_Shift");
+                      var cctvmySelect = $("#cctvLGBook_Shift");
+
+                      $(data).each(function (index, d) {
+                          mySelect.append('<option value = "' + d.ShiftName + '">' + d.ShiftName + '</option>');
+                          bmySelect.append('<option value = "' + d.ShiftName + '">' + d.ShiftName + '</option>');
+                          ertmySelect.append('<option value = "' + d.ShiftName + '">' + d.ShiftName + '</option>');
+                          cctvmySelect.append('<option value = "' + d.ShiftName + '">' + d.ShiftName + '</option>');
+                      });
+                  },
+                  error: function (data) {
+                      alert("ERROR");
+                  }
+
+              });
+
+
+
+
+
+              getweponList();
+              MystryAudit_Agency();
+
+              $.ajax({
+                  url: 'http://192.168.4.4/audit/MallServices.asmx/userList',
+                  method: "POST",
+                  dataType: "json",
+                  success: function (data) {
+                      //this code is requred to use with dataType="text" and convert text to JSON Jquery Object for executing each statement
+                      var mySelect = $("#selUser_UserRightsPage");
+                      $(data).each(function (index, d) {
+                          mySelect.append('<option value = "' + d.uname + '">' + d.uname + '</option>');
+                      });
+                  },
+                  error: function (data) {
+                      alert("ERROR");
+                  }
+              });
+
+
+              $.ajax({
+                  url: 'http://192.168.4.4/audit/MallServices.asmx/FormList',
+                  method: "POST",
+                  dataType: "json",
+                  success: function (data) {
+                      //this code is requred to use with dataType="text" and convert text to JSON Jquery Object for executing each statement
+                      var mySelect = $("#AttachEmailToForm_FormName");
+                      $(data).each(function (index, d) {
+                          mySelect.append('<option value = "' + d.uname + '">' + d.uname + '</option>');
+                      });
+                  },
+                  error: function (data) {
+                      alert("ERROR");
+                  }
+              });
+
+
+
+
+
+
+              function MystryAudit_Agency() {
+                  $.ajax({
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/SecurityAgency',
+                      method: "POST",
+                      dataType: "json",
+                      success: function (data) {
+                          //this code is requred to use with dataType="text" and convert text to JSON Jquery Object for executing each statement
+                          var mySelect = $("#MystryAudit_Agency");
+                          mySelect.empty();
+                          $(data).each(function (index, d) {
+                              mySelect.append('<option value = "' + d.TMPNAME + '">' + d.TMPNAME + '</option>');
+                          });
+                      },
+                      error: function (data) {
+                          alert("ERROR");
+                      }
+
+                  });
+              };
+
+
+              function getweponList() {
+                  $.ajax({
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/getWepon',
+                      method: "POST",
+                      dataType: "json",
+                      success: function (data) {
+                          //this code is requred to use with dataType="text" and convert text to JSON Jquery Object for executing each statement
+                          var mySelect = $("#pgWeapon_Type");
+                          mySelect.empty();
+                          $(data).each(function (index, d) {
+                              mySelect.append('<option value = "' + d.TMPNAME + '">' + d.TMPNAME + '</option>');
+                          });
+                      },
+                      error: function (data) {
+                          alert("ERROR");
+                      }
+
+                  });
+              };
+
+
+
+
+
+              $("#MainHomePage").click(function () {
+                  $.mobile.changePage($("#startpage"), { transition: "slideup", changeHash: false }); // user rights
+              });
+
+              $("#frmIncidence_back").click(function () {
+                  $.mobile.changePage($("#subMenu"), { transition: "slideup", changeHash: false }); // user rights
+              });
+              $("#tanddorFryerMaster_back").click(function () {
+                  $.mobile.changePage($("#subMenu"), { transition: "slideup", changeHash: false }); // user rights
+              });
+
+
+              $("#PageAudit_Back").click(function () {
+                  $.mobile.changePage($("#subMenu"), { transition: "slideup", changeHash: false }); // user rights
+              });
+
+              $("#lgbook_back").click(function () {
+                  $.mobile.changePage($("#subMenu"), { transition: "slideup", changeHash: false }); // user rights
+              });
+              $("#ertlgbook_back").click(function () {
+                  $.mobile.changePage($("#subMenu"), { transition: "slideup", changeHash: false }); // user rights
+              });
+              $("#cctvlgbook_back").click(function () {
+                  $.mobile.changePage($("#subMenu"), { transition: "slideup", changeHash: false }); // user rights
+              });
+
+              $("#btnexit_CreatePage").click(function () {
+                  $.mobile.changePage($("#subMenu"), { transition: "slideup", changeHash: false }); // user rights
+              });
+              $("#pageabout_home").click(function () {
+                  $.mobile.changePage($("#startpage"), { transition: "slideup", changeHash: false }); // user rights
+              });
+
+
+              $("#userrights_back").click(function () {
+                  $.mobile.changePage($("#subMenu"), { transition: "slideup", changeHash: false }); // user rights
+              });
+
+
+              $("#submenu_Back").click(function () {
+                  $.mobile.changePage($("#MainMenu"), { transition: "slideup", changeHash: false }); // user rights
+              });
+
+              $("#btnCancel").click(function () {
+                  $.mobile.changePage($("#MainMenu"), { transition: "slideup", changeHash: false }); // user rights
+              });
+              $("#pgWeapon_back").click(function () {
+                  $.mobile.changePage($("#subMenu"), { transition: "slideup", changeHash: false }); // user rights
+              });
+              $("#MystryAudit_back").click(function () {
+                  $.mobile.changePage($("#subMenu"), { transition: "slideup", changeHash: false }); // user rights
+              });
+
+              $("#pgWeaponMaster_back").click(function () {
+                  $.mobile.changePage($("#subMenu"), { transition: "slideup", changeHash: false }); // user rights
+              });
+              $("#SecurityAgencyMaster_back").click(function () {
+                  $.mobile.changePage($("#subMenu"), { transition: "slideup", changeHash: false }); // user rights
+              });
+
+              //Tandoor Entry to start
+              $("#StartTandoorEntry").click(function () {
+
+              });
+
+
+
+
+              $("#pgWeapon_Type_refresh").click(function () {
+                  getweponList();
+              });
+
+
+              $("#btnEmail").click(function () {
+                  mname = "<li id='OK'> <a href='#'>" + $("#txtEmail").val() + '<a href="#" id="OK"> </a> </li>';
+                  $("#AttachEmailToForm_ul").append(mname).listview('refresh');
+                  $("#txtEmail").val("");
+
+              });
+
+
+
+              $("#MainMenu").delegate('li', 'click', function () {
+                  itemclicked = '' + $(this).attr('id');
+                  getSubForms(itemclicked, LogDetail.LoginName);
+                  $.mobile.changePage($("#subMenu"), { transition: "slideup", changeHash: false }); // user rights
+
+              });
+
+              $("#ulsub").delegate('li', 'click', function () {
+                  itemclicked = '#' + $(this).attr('id');
+                  alert(itemclicked);
+                  if (itemclicked == "#PageAudit") {
+                      alert("ok");
+                      $.mobile.changePage($("#PageAuditx"), { transition: "slideup", changeHash: false }); // user rights
+                  }
+                  else {
+                      $.mobile.changePage($(itemclicked), { transition: "slideup", changeHash: false }); // user rights
+                  }
+              });
+
+
+
+              function getUserForms(lName) {
+                  var mname = '';
+                  $.ajax({
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/SelectUsersForms',
+                      type: "POST",
+                      dataType: "text",
+                      data: { 'Uname': lName },
+                      success: function (data) {
+                          //this code is requred to use with dataType="text" and convert text to JSON Jquery Object for executing each statement
+                          var x = $.parseJSON(data);
+                          $("#ulMainMenu").empty();
+                          $(x).each(function (index, quest) {
+                              //mname = "<li><a href='" + "#" + "'</a>" + quest.Fname + "</li>";
+                              mname = "<li id='" + quest.Fname + "'><a href='" + "" + "'</a> <h2>" + quest.PageDescription + "</h2> <p> " + quest.PageAddlInfo + "</p></li>";
+
+                              $("#ulMainMenu").append(mname).listview('refresh');
+                          });
+                      },
+                      error: function (data) {
+                          alert("ERROR");
+                      }
+                  });
+              }
+
+
+              function getSubForms(MasterName, lName) {
+                  var mname = '';
+                  $.ajax({
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/SelectSubForms',
+                      type: "POST",
+                      dataType: "text",
+                      data: { 'Mastername': MasterName, 'Uname': lName },
+                      success: function (data) {
+                          //this code is requred to use with dataType="text" and convert text to JSON Jquery Object for executing each statement
+                          var x = $.parseJSON(data);
+                          $("#ulsub").empty();
+                          $(x).each(function (index, quest) {
+                              mname = "<li id='" + quest.PageName + "'><a href='" + "#" + "'</a> <h2>" + quest.PageDescription + "</h2> <p> " + quest.PageAddlInfo + "</p></li>";
+                              $("#ulsub").append(mname).listview('refresh');
+                          });
+                      },
+                      error: function (data) {
+                          alert("ERROR");
+                      }
+                  });
+              }
+
+
+              $("#lgbook_edit").click(function () {
+                  var now = new Date();
+                  var mMonth = now.getMonth() + 1;
+
+                  $("#LGBook_Uname").html(LogDetail.LoginName).toLocaleString();
+
+                  $("#LGBook_date").html(now.getFullYear() + '/' + mMonth + '/' + now.getDate());
+                  $("#LGBook_time").html(now.getHours() + ":" + now.getMinutes());
+                  $("#lgOccurance").val("");
+
+              });
+
+              $("#cctvlgbook_edit").click(function () {
+                  var now = new Date();
+                  var mMonth = now.getMonth() + 1;
+
+                  $("#cctvLGBook_Uname").html(LogDetail.LoginName).toLocaleString();
+
+                  $("#cctvLGBook_date").html(now.getFullYear() + '/' + mMonth + '/' + now.getDate());
+                  $("#cctvLGBook_time").html(now.getHours() + ":" + now.getMinutes());
+                  $("#cctvlgOccurance").val("");
+
+              });
+
+              $("#ertlgbook_edit").click(function () {
+                  var now = new Date();
+                  var mMonth = now.getMonth() + 1;
+
+                  $("#ertLGBook_Uname").html(LogDetail.LoginName).toLocaleString();
+
+                  $("#ertLGBook_date").html(now.getFullYear() + '/' + mMonth + '/' + now.getDate());
+                  $("#ertLGBook_time").html(now.getHours() + ":" + now.getMinutes());
+                  $("#ertlgOccurance").val("");
+
+              });
+
+
+              $("#pgWeapon_edit").click(function () {
+                  var now = new Date();
+                  var mMonth = now.getMonth() + 1;
+
+                  $("#pgWeapon_Uname").html(LogDetail.LoginName).toLocaleString();
+
+                  $("#pgWeapon_Date").html(now.getFullYear() + '/' + mMonth + '/' + now.getDate());
+                  $("#pgWeapon_Time").html(now.getHours() + ":" + now.getMinutes());
+                  $("#pgWeapon_Customer").val("");
+                  $("#pgWeapon_Contact").val("");
+                  $("#pgWeapon_area").val("");
+                  $("#pgWeapon_Type").val("");
+                  $("#pgWeapon_License").val("");
+                  $("#pgWeapon_Cartaiges").val("");
+                  $("#pgWeapon_Rem").val("");
+                  $("#pgWeapon_Customer").focus();
+
+              });
+
+
+              $("#MystryAudit_Edit").click(function () {
+                  var now = new Date();
+                  var mMonth = now.getMonth() + 1;
+
+                  $("#MystryAudit_Uname").html(LogDetail.LoginName).toLocaleString();
+
+                  $("#MystryAudit_Date").html(now.getFullYear() + '/' + mMonth + '/' + now.getDate());
+                  $("#MystryAudit_Time").html(now.getHours() + ":" + now.getMinutes());
+                  $("#MystryAudit_Gname").val("");
+                  $("#MystryAudit_Location").val("");
+                  $("#MystryAudit_Agency").val("");
+                  $("#MystryAudit_Eye").val("0");
+                  $("#MystryAudit_Smile").val("0");
+                  $("#MystryAudit_Greet").val("0");
+                  $("#MystryAudit_ToptoBottom").val("0");
+                  $("#MystryAudit_bagCheck").val("0");
+                  $("#MystryAudit_HHMD").val("0");
+                  $("#MystryAudit_Physical").val("0");
+                  $("#MystryAudit_Thanks").val("0");
+                  $("#MystryAudit_Result").val("Pass");
+                  $("#MystryAudit_Rem").val("");
+
+                  $("#MystryAudit_Gname").focus();
+
+              });
+
+
+              //save Incidence
+
+              $("#SaveInceden").click(function () {
+                  var inci = {};
+                  var now = new Date();
+                  var mMonth = now.getMonth() + 1;
+                  inci.Uname = LogDetail.LoginName;
+                  inci.EntryDate = localdate;
+                  inci.EntryTime = '';
+
+                  inci.frmInciden_txtdate = $("#frmInciden_txtdate").val();
+                  inci.frmInciden_txttime = $("#frmInciden_txttime").val();
+
+                  inci.unit = $("#frmInciden_txtUnit").val();
+                  inci.incident = $("#frmInciden_txtincident").val();
+                  inci.floor = $("#frmInciden_txtFloor").val()+" ";
+                  inci.location = $("#frmInciden_txtLocation").val() + " ";
+                  inci.frmInciden_Reprted_ID = $("#frmInciden_Reprted_ID").val() + " ";
+                  inci.frmInciden_Reprted_Name = $("#frmInciden_Reprted_Name").val()+ " ";
+                  inci.frmInciden_Reprted_Dept = $("#frmInciden_Reprted_Dept").val()+ " ";
+                  inci.frmInciden_Reprted_Position = $("#frmInciden_Reprted_Position").val() + " ";
+                  inci.frmInciden_Compl_ID = $("#frmInciden_Compl_ID").val() + " ";
+                  inci.frmInciden_Compl_Fname = $("#frmInciden_Compl_Fname").val() + " ";
+                  inci.frmInciden_Compl_Mname = $("#frmInciden_Compl_Mname").val() + " ";
+                  inci.frmInciden_Compl_Surname = $("#frmInciden_Compl_Surname").val() + " ";
+                  inci.frmInciden_Compl_DOB = $("#frmInciden_Compl_DOB").val() + " ";
+                  inci.frmInciden_Compl_MOB = $("#frmInciden_Compl_MOB").val() + " ";
+                  inci.frmInciden_Compl_Tel = $("#frmInciden_Compl_Tel").val() + " ";
+                  inci.frmInciden_Compl_Email = $("#frmInciden_Compl_Email").val() + " ";
+                  inci.frmInciden_Compl_Addrs = $("#frmInciden_Compl_Addrs").val() + " ";
+                  inci.frmInciden_witness_ID = $("#frmInciden_witness_ID").val() + " ";
+                  inci.frmInciden_witness_Fname = $("#frmInciden_witness_Fname").val() + " ";
+                  inci.frmInciden_witness_Mname = $("#frmInciden_witness_Mname").val() + " ";
+                  inci.frmInciden_witness_Surname = $("#frmInciden_witness_Surname").val() + " ";
+                  inci.frmInciden_witness_DOB = $("#frmInciden_witness_DOB").val() ;
+                  inci.frmInciden_witness_MOB = $("#frmInciden_witness_MOB").val() + " ";
+                  inci.frmInciden_witness_Tel = $("#frmInciden_witness_Tel").val() + " ";
+                  inci.frmInciden_witness_Email = $("#frmInciden_witness_Email").val() + " ";
+                  inci.frmInciden_witness_Addrs = $("#frmInciden_witness_Addrs").val() + " ";
+                  inci.frmInciden_suspect_Fname = $("#frmInciden_suspect_Fname").val() + " ";
+                  inci.frmInciden_suspect_Mname = $("#frmInciden_suspect_Mname").val() + " ";
+                  inci.frmInciden_suspect_Surname = $("#frmInciden_suspect_Surname").val() + " ";
+                  inci.frmInciden_suspect_DOB = $("#frmInciden_suspect_DOB").val();
+                  inci.frmInciden_suspect_Mob = $("#frmInciden_suspect_Mob").val() + " ";
+                  inci.frmInciden_suspect_Tel = $("#frmInciden_suspect_Tel").val();
+                  inci.frmInciden_suspect_Email = $("#frmInciden_suspect_Email").val();
+                  inci.frmInciden_suspect_Addrs = $("#frmInciden_suspect_Addrs").val();
+                  inci.frmInciden_suspect = $("#frmInciden_suspect").val() + " ";
+                  inci.frmInciden_suspect_ID = $("#frmInciden_suspect_ID").val();
+
+                  inci.frmInciden_suspect_Height = $("#frmInciden_suspect_Height").val();
+                  inci.frmInciden_suspect_Weight = $("#frmInciden_suspect_Weight").val();
+                  inci.frmInciden_suspect_Complex = $("#frmInciden_suspect_Complex").val();
+                  inci.frmInciden_suspect_Hair = $("#frmInciden_suspect_Hair").val();
+                  inci.frmInciden_suspect_Clot = $("#frmInciden_suspect_Clot").val();
+                  inci.frmInc_Rem = $("#frmInc_Rem").val();
+
+                  inci.frmInciden_Reprted = $("input[name='frmInciden_Reprted']:checked").val();
+                  inci.frmInciden_Reprted_type = $("input[name='frmInciden_Reprted_type']:checked").val();
+                  inci.frmInciden_Reprted_type = $("input[name='frmInciden_Reprted_type']:checked").val();
+                  inci.frmInciden_witness = $("input[name='frmInciden_witness']:checked").val();
+                  inci.frmInciden_Compl = $("input[name='frmInciden_Compl']:checked").val();
+
+                  inci.frmInciden_Injuries = $("input[name='frmInciden_Injuries']:checked").val();
+                  inci.frmInciden_Injuries_Descr = $("#frmInciden_Injuries_Descr ").val();
+                  inci.frmInciden_Alcohol = $("input[name='frmInciden_Alcohol']:checked").val();
+                  inci.frmInciden_Alcohol_descr = $("#frmInciden_Alcohol_descr").val();
+                  inci.frmInc_txtNarr = $("#frmInc_txtNarr").val();
+                  inci.frmInciden_Inc = $("input[name='frmInciden_Inc']:checked").val();
+
+
+                  $.ajax({
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/SaveInciTran',
+                      method: 'post',
+                      dataType: 'text',
+                      data: {
+                          Uname: inci.Uname,
+                          EntryDate: inci.EntryDate,
+                          EntryTime: inci.EntryTime,
+                          frmInciden_txtdate: inci.frmInciden_txtdate,
+                          frmInciden_txttime: inci.frmInciden_txttime,
+                          unit: inci.unit,
+                          incident: inci.incident,
+                          floor: inci.floor,
+                          location: inci.location,
+                          frmInciden_suspect: inci.frmInciden_suspect,
+                          frmInciden_Reprted_ID: inci.frmInciden_Reprted_ID,
+                          frmInciden_Reprted_Name: inci.frmInciden_Reprted_Name,
+                          frmInciden_Reprted_Dept: inci.frmInciden_Reprted_Dept,
+                          frmInciden_Reprted_Position: inci.frmInciden_Reprted_Position,
+                          frmInciden_Compl_ID: inci.frmInciden_Compl_ID,
+                          frmInciden_Compl_Fname: inci.frmInciden_Compl_Fname,
+                          frmInciden_Compl_Mname: inci.frmInciden_Compl_Mname,
+                          frmInciden_Compl_Surname: inci.frmInciden_Compl_Surname,
+                          frmInciden_Compl_DOB: inci.frmInciden_Compl_DOB,
+                          frmInciden_Compl_MOB: inci.frmInciden_Compl_MOB,
+                          frmInciden_Compl_Tel: inci.frmInciden_Compl_Tel,
+                          frmInciden_Compl_Email: inci.frmInciden_Compl_Email,
+                          frmInciden_Compl_Addrs: inci.frmInciden_Compl_Addrs,
+                          frmInciden_witness_ID: inci.frmInciden_witness_ID,
+                          frmInciden_witness_Fname: inci.frmInciden_witness_Fname,
+                          frmInciden_witness_Mname: inci.frmInciden_witness_Mname,
+                          frmInciden_witness_Surname: inci.frmInciden_witness_Surname,
+                          frmInciden_witness_DOB: inci.frmInciden_witness_DOB,
+                          frmInciden_witness_MOB: inci.frmInciden_witness_MOB,
+                          frmInciden_witness_Tel: inci.frmInciden_witness_Tel,
+                          frmInciden_witness_Email: inci.frmInciden_witness_Email,
+                          frmInciden_witness_Addrs: inci.frmInciden_witness_Addrs,
+                          frmInciden_suspect_ID: inci.frmInciden_suspect_ID,
+
+                          frmInciden_suspect_Fname: inci.frmInciden_suspect_Fname,
+                          frmInciden_suspect_Mname: inci.frmInciden_suspect_Mname,
+                          frmInciden_suspect_Surname: inci.frmInciden_suspect_Surname,
+                          frmInciden_suspect_DOB: inci.frmInciden_suspect_DOB,
+                          frmInciden_suspect_Mob: inci.frmInciden_suspect_Mob,
+                          frmInciden_suspect_Tel: inci.frmInciden_suspect_Tel,
+                          frmInciden_suspect_Email: inci.frmInciden_suspect_Email,
+                          frmInciden_suspect_Addrs: inci.frmInciden_suspect_Addrs,
+                          frmInciden_suspect_Height: inci.frmInciden_suspect_Height,
+                          frmInciden_suspect_Weight: inci.frmInciden_suspect_Weight,
+                          frmInciden_suspect_Complex: inci.frmInciden_suspect_Complex,
+                          frmInciden_suspect_Hair: inci.frmInciden_suspect_Hair,
+                          frmInciden_suspect_Clot: inci.frmInciden_suspect_Clot,
+                          frmInciden_Alcohol: inci.frmInciden_Alcohol,
+                          frmInciden_Alcohol_descr: inci.frmInciden_Alcohol_descr,
+                          frmInciden_Injuries: inci.frmInciden_Injuries,
+                          frmInciden_Injuries_Descr: inci.frmInciden_Injuries_Descr,
+                          frmInciden_Reprted: inci.frmInciden_Reprted,
+                          frmInciden_Reprted_type: inci.frmInciden_Reprted_type,
+                          frmInciden_witness: inci.frmInciden_witness,
+                          frmInciden_Compl: inci.frmInciden_Compl,
+                          frmInc_txtNarr: inci.frmInc_txtNarr,
+                          frmInciden_Inc:inci.frmInciden_Inc,
+                          frmInc_Rem: inci.frmInc_Rem
+                      },
+                      success: function (r) {
+                          alert("Incidence Saved");
+                          //for sending Email This Ajax Required
+                          $.ajax({
+                              url: 'http://192.168.4.4/audit/MallServices.asmx/SendMail',
+                              method: 'post',
+                              dataType: 'text',
+                              data: { fname: 'frmInciden',
+                                  message: 'message for incident will come here later'
+                              },
+                              success: function (r) {
+                              },
+                              error: function (err) {
+                                  alert("Problem in Sending Message");
+                              }
+
+                          });
+
+                          $("#frmInciden_txtUnit").val("");
+                          $("#frmInciden_txtincident").val("");
+                          $("#frmInciden_txtFloor").val("") + " ";
+                          $("#frmInciden_txtLocation").val("") ;
+                          $("#frmInciden_Reprted_ID").val("") + " ";
+                          $("#frmInciden_Reprted_Name").val("") + " ";
+                          $("#frmInciden_Reprted_Dept").val("") + " ";
+                          $("#frmInciden_Reprted_Position").val("") + " ";
+                          $("#frmInciden_Compl_ID").val("");
+                          $("#frmInciden_Compl_Fname").val("") + " ";
+                          $("#frmInciden_Compl_Mname").val("") + " ";
+                          $("#frmInciden_Compl_Surname").val("") + " ";
+                          $("#frmInciden_Compl_DOB").val("01/01/1900") + " ";
+                          $("#frmInciden_Compl_MOB").val("") + " ";
+                          $("#frmInciden_Compl_Tel").val("") + " ";
+                          $("#frmInciden_Compl_Email").val("") + " ";
+                          $("#frmInciden_Compl_Addrs").val("") + " ";
+                          $("#frmInciden_witness_ID").val("") + " ";
+                          $("#frmInciden_witness_Fname").val("") + " ";
+                          $("#frmInciden_witness_Mname").val("") + " ";
+                          $("#frmInciden_witness_Surname").val("") + " ";
+                          $("#frmInciden_witness_DOB").val("01/01/1900");
+                          $("#frmInciden_witness_MOB").val("") + " ";
+                          $("#frmInciden_witness_Tel").val("") + " ";
+                          $("#frmInciden_witness_Email").val("") + " ";
+                          $("#frmInciden_witness_Addrs").val("") + " ";
+                          $("#frmInciden_suspect_Fname").val("") + " ";
+                          $("#frmInciden_suspect_Mname").val("") + " ";
+                          $("#frmInciden_suspect_Surname").val("") + " ";
+                          $("#frmInciden_suspect_DOB").val("01/01/1900");
+                          $("#frmInciden_suspect_Mob").val("") + " ";
+                          $("#frmInciden_suspect_Tel").val("");
+                          $("#frmInciden_suspect_Email").val("");
+                          $("#frmInciden_suspect_Addrs").val("");
+                          $("#frmInciden_suspect").val("") + " ";
+                          $("#frmInciden_suspect_ID").val("");
+
+                          $("#frmInciden_suspect_Height").val("");
+                          $("#frmInciden_suspect_Weight").val("");
+                          $("#frmInciden_suspect_Complex").val("");
+                          $("#frmInciden_suspect_Hair").val("");
+                          $("#frmInciden_suspect_Clot").val("");
+                          $("#frmInc_Rem").val("");
+
+                          $("input[name='frmInciden_Reprted']:checked").val("");
+                          $("input[name='frmInciden_Reprted_type']:checked").val("");
+                          $("input[name='frmInciden_Reprted_type']:checked").val("");
+                          $("input[name='frmInciden_witness']:checked").val("");
+                          $("input[name='frmInciden_Compl']:checked").val("");
+
+                          $("input[name='frmInciden_Injuries']:checked").val("");
+                          $("#frmInciden_Injuries_Descr ").val("");
+                          $("input[name='frmInciden_Alcohol']:checked").val("");
+                          $("#frmInciden_Alcohol_descr").val("");
+                          $("#frmInc_txtNarr").val("");
+                          $("input[name='frmInciden_Inc']:checked").val("");
+
+
+                          $.mobile.changePage($("#subMenu"), { transition: "pop", changeHash: false }); // user rights
+                      },
+                      error: function (err) {
+                          alert("Something Wrong");
+                      }
+
+                  });
+
+
+
+              });
+
+
+
+
+
+
+
+
+
+
+
+
+              //              -- -- -- -- -- -- -- -- -- -- --
+
+              $("#LGB_save").click(function () {
+                  var log = {};
+                  var now = new Date();
+                  var mMonth = now.getMonth() + 1;
+                  log.Uname = LogDetail.LoginName;
+                  log.LogDate = $("#LGBook_date").html();
+                  log.LogTime = $("#LGBook_time").html();
+                  log.Occurance = $("#lgOccurance").val();
+                  log.LogType = "LP";
+                  log.Importance = "1";
+
+                  log.Shift = $("#LGBook_Shift").val();
+                  $.ajax({
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/SaveLog',
+                      method: 'post',
+                      dataType: 'text',
+                      data: { LogType: log.LogType,
+                          LogDate: log.LogDate,
+                          LogTime: log.LogTime,
+                          Occurance: log.Occurance,
+                          uname: log.Uname,
+                          shift: log.Shift,
+                          Importance: log.Importance
+                      },
+                      success: function (r) {
+                          alert("Log Added");
+                          //for sending Email This Ajax Required
+                          $.ajax({
+                              url: 'http://192.168.4.4/audit/MallServices.asmx/SendMail',
+                              method: 'post',
+                              dataType: 'text',
+                              data: { fname: 'LGBook',
+                                  message: "Create By :" + log.Uname + ">>>>>>"+ log.Occurance
+                               },
+                              success: function (r) {
+                               },
+                              error: function (err) {
+                                  alert("Problem in Sending Message");
+                              }
+
+                          });
+                          $("#LGBook_date").html('');
+                          $("#LGBook_time").html('');
+                          $("#lgOccurance").val('');
+                          $.mobile.changePage($("#subMenu"), { transition: "slideup", changeHash: false }); // user rights
+                      },
+                      error: function (err) {
+                          alert("Something Wrong");
+                      }
+
+                  });
+
+
+
+              });
+
+
+
+              $("#ertLGB_save").click(function () {
+                  var log = {};
+                  var now = new Date();
+                  var mMonth = now.getMonth() + 1;
+                  log.Uname = LogDetail.LoginName;
+                  log.LogDate = $("#ertLGBook_date").html();
+                  log.LogTime = $("#ertLGBook_time").html();
+                  log.Occurance = $("#ertlgOccurance").val();
+                  log.LogType = "ER";
+                  log.Importance = "1";
+
+                  log.Shift = $("#ertLGBook_Shift").val();
+                  $.ajax({
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/SaveLog',
+                      method: 'post',
+                      dataType: 'text',
+                      data: { LogType: log.LogType,
+                          LogDate: log.LogDate,
+                          LogTime: log.LogTime,
+                          Occurance: log.Occurance,
+                          uname: log.Uname,
+                          shift: log.Shift,
+                          Importance: log.Importance
+                      },
+                      success: function (r) {
+                          alert("ERT Log Added");
+
+                          //for sending Email This Ajax Required
+                          $.ajax({
+                              url: 'http://192.168.4.4/audit/MallServices.asmx/SendMail',
+                              method: 'post',
+                              dataType: 'text',
+                              data: { fname: 'ERTLOGBOOK',
+                                  message: "Create By :" + log.Uname + ">>>>>>" + log.Occurance
+                              },
+                              success: function (r) {
+                              },
+                              error: function (err) {
+                                  alert("Problem in Sending Message");
+                              }
+
+                          });
+
+
+                          $("#ertLGBook_date").html('');
+                          $("#ertLGBook_time").html('');
+                          $("#ertlgOccurance").val('');
+                          $.mobile.changePage($("#subMenu"), { transition: "slideup", changeHash: false }); // user rights
+                      },
+                      error: function (err) {
+                          alert("Something Wrong");
+                      }
+
+                  });
+
+
+
+              });
+
+
+              $("#cctvLGB_save").click(function () {
+                  var log = {};
+                  var now = new Date();
+                  var mMonth = now.getMonth() + 1;
+                  log.Uname = LogDetail.LoginName;
+                  log.LogDate = $("#cctvLGBook_date").html();
+                  log.LogTime = $("#cctvLGBook_time").html();
+                  log.Occurance = $("#cctvlgOccurance").val();
+                  log.LogType = "CC";
+                  log.Importance = "1";
+
+                  log.Shift = $("#cctvLGBook_Shift").val();
+                  $.ajax({
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/SaveLog',
+                      method: 'post',
+                      dataType: 'text',
+                      data: { LogType: log.LogType,
+                          LogDate: log.LogDate,
+                          LogTime: log.LogTime,
+                          Occurance: log.Occurance,
+                          uname: log.Uname,
+                          shift: log.Shift,
+                          Importance: log.Importance
+                      },
+                      success: function (r) {
+                          alert("CC TV Log Added");
+                          //for sending Email This Ajax Required
+                          $.ajax({
+                              url: 'http://192.168.4.4/audit/MallServices.asmx/SendMail',
+                              method: 'post',
+                              dataType: 'text',
+                              data: { fname: 'CCTVLOGBOOK',
+                                  message: "Create By :" + log.Uname + ">>>>>>" + log.Occurance
+                              },
+                              success: function (r) {
+                              },
+                              error: function (err) {
+                                  alert("Problem in Sending Message");
+                              }
+
+                          });
+                          $("#cctvLGBook_date").html('');
+                          $("#cctvLGBook_time").html('');
+                          $("#cctvlgOccurance").val('');
+                          $.mobile.changePage($("#subMenu"), { transition: "slideup", changeHash: false }); // user rights
+                      },
+                      error: function (err) {
+                          alert("Something Wrong");
+                      }
+
+                  });
+
+
+
+              });
+
+
+
+              $("#MystryAudit_Save").click(function () {
+                  var MystryAudit = {};
+                  var now = new Date();
+                  var mMonth = now.getMonth() + 1;
+                  MystryAudit.Uname = LogDetail.LoginName;
+                  MystryAudit.LogDate = $("#MystryAudit_Date").html();
+                  MystryAudit.LogTime = $("#MystryAudit_Time").html();
+                  MystryAudit.Gname = $("#MystryAudit_Gname").val();
+                  MystryAudit.Location = $("#MystryAudit_Location").val();
+                  MystryAudit.Agency = $("#MystryAudit_Agency").val();
+                  MystryAudit.Eye = $("#MystryAudit_Eye").val();
+                  MystryAudit.Smile = $("#MystryAudit_Smile").val();
+                  MystryAudit.Greet = $("#MystryAudit_Greet").val();
+                  MystryAudit.ToptoBottom = $("#MystryAudit_ToptoBottom").val();
+                  MystryAudit.BagCheck = $("#MystryAudit_bagCheck").val();
+                  MystryAudit.HHMD = $("#MystryAudit_HHMD").val();
+                  MystryAudit.Physical = $("#MystryAudit_Physical").val();
+                  MystryAudit.Thanks = $("#MystryAudit_Thanks").val();
+                  MystryAudit.Result = $("#MystryAudit_Result").val();
+                  MystryAudit.Rem = $("#MystryAudit_Rem").val();
+
+                  $.ajax({
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/SaveMystryAuditLOG',
+                      method: 'post',
+                      dataType: 'text',
+                      data: { uname: MystryAudit.Uname,
+                          LogDate: MystryAudit.LogDate,
+                          LogTime: MystryAudit.LogTime,
+                          Gname: MystryAudit.Gname,
+                          Location: MystryAudit.Location,
+                          Agency: MystryAudit.Agency,
+                          Eye: MystryAudit.Eye,
+                          smile: MystryAudit.Smile,
+                          Greet: MystryAudit.Greet,
+                          ToptoBottom: MystryAudit.ToptoBottom,
+                          BagCheck: MystryAudit.BagCheck,
+                          HHMD: MystryAudit.HHMD,
+                          Physical: MystryAudit.Physical,
+                          Thanks: MystryAudit.Thanks,
+                          Result: MystryAudit.Result,
+                          Remark: MystryAudit.Rem
+                      },
+                      success: function (r) {
+                          alert("Mystry Audit Log Added");
+                          //for sending Email This Ajax Required
+                          $.ajax({
+                              url: 'http://192.168.4.4/audit/MallServices.asmx/SendMail',
+                              method: 'post',
+                              dataType: 'text',
+                              data: { fname: 'MystryAudit',
+                                  message: "Create By :" + MystryAudit.Uname + ">>>>>>" + MystryAudit.Rem
+                              },
+                              success: function (r) {
+                              },
+                              error: function (err) {
+                                  alert("Problem in Sending Message");
+                              }
+
+                          });
+                          $("#MystryAudit_Date").html("");
+                          $("#MystryAudit_Time").html("");
+                          $("#MystryAudit_Gname").val("");
+                          $("#MystryAudit_Location").val("");
+                          $("#MystryAudit_Agency").val("");
+                          $("#MystryAudit_Eye").val("");
+                          $("#MystryAudit_Smile").val("");
+                          $("#MystryAudit_Greet").val("");
+                          $("#MystryAudit_ToptoBottom").val("");
+                          $("#MystryAudit_bagCheck").val("");
+                          $("#MystryAudit_HHMD").val("");
+                          $("#MystryAudit_Physical").val("");
+                          $("#MystryAudit_Thanks").val("");
+                          $("#MystryAudit_Result").val("");
+                          $("#MystryAudit_Rem").val("");
+                          $.mobile.changePage($("#subMenu"), { transition: "slideup", changeHash: false }); // user rights
+                      },
+                      error: function (err) {
+                          alert("Something Wrong");
+                      }
+
+                  });
+
+
+
+              });
+
+              $("#pgWeapon_Save").click(function () {
+                  var weapon = {};
+                  var now = new Date();
+                  var mMonth = now.getMonth() + 1;
+                  weapon.Uname = LogDetail.LoginName;
+                  weapon.LogDate = $("#pgWeapon_Date").html();
+                  weapon.LogTime = $("#pgWeapon_Time").html();
+                  weapon.Customer = $("#pgWeapon_Customer").val();
+                  weapon.Contact = $("#pgWeapon_Contact").val();
+                  weapon.area = $("#pgWeapon_area").val();
+                  weapon.type = $("#pgWeapon_Type").val();
+                  weapon.License = $("#pgWeapon_License").val();
+                  weapon.Cartaige = $("#pgWeapon_Cartaiges").val();
+                  weapon.Rem = $("#pgWeapon_Rem").val();
+
+                  $.ajax({
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/SaveWeaponLOG',
+                      method: 'post',
+                      dataType: 'text',
+                      data: { uname: weapon.Uname,
+                          LogDate: weapon.LogDate,
+                          LogTime: weapon.LogTime,
+                          CustomerName: weapon.Customer,
+                          ContactNo: weapon.Contact,
+                          area: weapon.area,
+                          Wepontype: weapon.type,
+                          LicenseNo: weapon.License,
+                          Cartaiges: weapon.Cartaige,
+                          Remark: weapon.Rem
+                      },
+                      success: function (r) {
+                          alert("Weapon Log Added");
+                          //for sending Email This Ajax Required
+                          $.ajax({
+                              url: 'http://192.168.4.4/audit/MallServices.asmx/SendMail',
+                              method: 'post',
+                              dataType: 'text',
+                              data: { fname: 'pgWeapon',
+                                  message: "Create By :" + weapon.Uname + ">>>>>>" + weapon.Rem
+                              },
+                              success: function (r) {
+                              },
+                              error: function (err) {
+                                  alert("Problem in Sending Message");
+                              }
+
+                          });
+                          $("#pgWeapon_Date").html("");
+                          $("#pgWeapon_Time").html("");
+                          $("#pgWeapon_Customer").val("");
+                          $("#pgWeapon_Contact").val("");
+                          $("#pgWeapon_area").val("");
+                          $("#pgWeapon_License").val("");
+                          $("#pgWeapon_Cartaiges").val("");
+                          $("#pgWeapon_Rem").val("");
+                          $.mobile.changePage($("#subMenu"), { transition: "slideup", changeHash: false }); // user rights
+                      },
+                      error: function (err) {
+                          alert("Something Wrong");
+                      }
+
+                  });
+
+
+
+              });
+
+
+
+
+              $("#selectgrp").click(function () {
+                  var det = {};
+                  det.mdate = 'a';
+                  det.mActGroup = $("#selectgrp").val();
+                  $("#grpCode").val((det.mActGroup));
+                  $.ajax({
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/getQuestion',
+                      type: "POST",
+                      contentType: "application/json; charset=utf-8",
+                      dataType: "text",
+                      data: JSON.stringify(det),
+                      success: function (data) {
+                          //this code is requred to use with dataType="text" and convert text to JSON Jquery Object for executing each statement
+                          var x = $.parseJSON(data.substring(0, data.length - 10));
+                          var myTable = $("#datatable");
+                          myTable.empty();
+                          $(x).each(function (index, quest) {
+                              myTable.append('<tr><td>' + quest.ActivityName + '</td><td>' +
+                              '<select name="slider" class = "myselect" id="' + quest.ActivityCode + '" data-role="slider" data-theme="c">    <option value="0">No</option>    <option value="1">Yes</option>  </select>  <textarea class = ' + 'txt' + quest.ActivityCode + ' id = ' + 'txt' + quest.ActivityCode + ' name = ' + 'txt' + quest.ActivityCode + '> </textarea>'
+                              + '</td><td>' + ''
+                              + '</td></tr>');
+                          });
+                      },
+                      error: function (data) {
+                          alert("ERROR");
+                      }
+
+                  });
+
+              });
+
+              $("#selUser_UserRightsPage").click(function () {
+                  var det = {};
+                  det.UName = $("#selUser_UserRightsPage").val();
+                  //alert(det.UName);
+                  $.ajax({
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/UsersForms',
+                      type: "POST",
+                      dataType: "text",
+                      data: { 'Uname': det.UName, 'Upass': '' },
+                      success: function (data) {
+                          //this code is requred to use with dataType="text" and convert text to JSON Jquery Object for executing each statement
+                          var x = $.parseJSON(data);
+                          var myTable = $('#tmp');
+                          myTable.empty();
+                          $("#tmp").append('<form>');
+                          $("#tmp").append('<fieldset data-role="controlgroup" data-type="horizontal">');
+                          $(x).each(function (index, quest) {
+                              chk = ""
+                              if (quest.Uname != "") {
+                                  $("#tmp").append('<input type="checkbox"' + 'class = "tmp"' + ' name="' + quest.Fname + '" id="' + quest.Fname + '" checked="checked" >' + quest.Fname);
+
+                              }
+                              else {
+                                  $("#tmp").append('<input type="checkbox"' + 'class = "tmp"' + ' name="' + quest.Fname + '" id="' + quest.Fname + '"  >' + quest.Fname);
+                              }
+
+                          });
+                          $("#tmp").append('</fieldset>');
+                          $("#tmp").append('</form>');
+
+                      },
+                      error: function (data) {
+                          alert("ERROR");
+                      }
+
+                  });
+
+              });
+
+
+
+              $("#btnsubmit_login").click(function () {
+                  //function to check user login
+                  var users = {};
+                  users.Uname = $("#txtUName_login").val();
+                  users.Upass = $("#txtPass_login").val();
+                  $.ajax({
+
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/getuserbyName',
+                      type: "POST",
+                      data: { 'Uname': users.Uname, 'Upass': users.Upass },
+
+                      success: function (data) {
+
+                          if (data == "True") {
+                              LogDetail.LoginName = users.Uname;
+                              getUserForms(LogDetail.LoginName);
+                              $("#homefoot").html("Login Name : " + LogDetail.LoginName);
+
+                              $.mobile.changePage($("#startpage"), { transition: "slideup", changeHash: false }); // user rights
+                              //$.mobile.changePage($("#MainMenu"), { transition: "slideup", changeHash: false }); // user rights
+
+
+                          }
+
+                          else {
+                              alert("User not validated");
+                          }
+                      },
+                      error: function (err) {
+                          alert("ERROR " + err);
+                      }
+                  });
+              });
+
+
+              $("#MallSystem").click(function () {
+
+                  getUserForms(LogDetail.LoginName);
+                  $.mobile.changePage($("#MainMenu"), { transition: "slideup", changeHash: false }); // user rights
+              });
+
+
+              $("#Imgabout").click(function () {
+
+                  $.mobile.changePage($("#pageabout"), { transition: "pop", changeHash: false }); // user rights
+              });
+
+              $("#subSaveUserRigts").click(function () {
+                  //myselect class is used to get only saved data in detail
+
+                  var txt = "["
+                  $('.tmp').each(function () {
+                      if ($(this).prop("checked") == true) {
+                          txt += "{";
+                          txt += '"Fname" : "' + $(this).attr('id') + '",';
+                          txt += '"Uname" : "' + $('#selUser_UserRightsPage').val() + '"';
+
+                          txt += "},";
+                      }
+                  });
+                  txt = txt.substring(0, txt.length - 1);
+                  txt += "]";
+                  //alert(txt);
+                  var det = {};
+                  det.xdata = txt;
+
+
+
+                  $.ajax({
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/saveUserFormsRights',
+                      type: "POST",
+                      dataType: "text",
+                      data: det,
+                      success: function (data) {
+                          alert("saved");
+                          //for sending Email This Ajax Required
+                          $.ajax({
+                              url: 'http://192.168.4.4/audit/MallServices.asmx/SendMail',
+                              method: 'post',
+                              dataType: 'text',
+                              data: { fname: 'UserRightsPage',
+                                  message: txt
+                              },
+                              success: function (r) {
+                              },
+                              error: function (err) {
+                                  alert("Problem in Sending Message");
+                              }
+
+                          });
+
+                      },
+                      error: function (data) {
+                          alert("ERROR");
+                      }
+
+                  });
+
+              });
+
+
+              $("#savedata").click(function () {
+                  //myselect class is used to get only saved data in detail
+                  var mpass = {};
+                  mpass.AuditDate = $("#xdate").html();
+                  mpass.shift = $("#selShift").val();
+                  mpass.Agroup = $("#grpCode").val();
+
+                  $.ajax({
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/CheckQuestion',
+                      type: "POST",
+                      dataType: "text",
+                      data: { 'AuditDate': mpass.AuditDate, 'Shift': mpass.shift, 'ActivityGroup': mpass.Agroup },
+                      success: function (data) {
+                          if (data == 'False') {
+                              var txt = "["
+                              $('.myselect').each(function () {
+                                  txt += "{";
+                                  txt += '"ActivityCode" : "' + $(this).attr('id') + '",';
+                                  txt += '"AuditValue" : "' + $(this).val() + '",';
+                                  txt += '"ActivityGroup" : "' + $("#grpCode").val() + '",';
+                                  txt += '"shift" : "' + $("#selShift").val() + '",';
+                                  txt += '"AuditUser" : "' + $("#xuser").html() + '",';
+                                  txt += '"AuditDate" : "' + $("#xdate").html() + '",';
+                                  txt += '"AuditTime" : "' + $("#xtime").html() + '",';
+                                  txt += '"ActRemark" : "' + $('#txt' + $(this).attr('id')).val() + '"';
+                                  txt += "},";
+
+                              });
+                              txt = txt.substring(0, txt.length - 1);
+                              txt += "]";
+
+                              var det = {};
+                              det.xdata = txt;
+
+
+                              //Email process
+                              $.ajax({
+                                  url: 'http://192.168.4.4/audit/MallServices.asmx/saveQuestion',
+                                  type: "POST",
+                                  dataType: "text",
+                                  data: det,
+                                  success: function (data) {
+                                      alert("saved");
+                                      //Email process
+                                      $.ajax({
+                                          url: 'http://192.168.4.4/audit/MallServices.asmx/SendMail',
+                                          method: 'post',
+                                          dataType: 'text',
+                                          data: { fname: 'PageAudit',
+                                              message: 'AUDIT SAVED'
+                                          },
+                                          success: function (r) {
+                                          },
+                                          error: function (err) {
+                                              alert("Problem in Sending Message");
+                                          }
+
+                                      });
+
+                                  },
+                                  error: function (data) {
+                                      alert("ERROR");
+                                  }
+
+                              });
+                          }
+                          else {
+                              alert("Duplication Error");
+                          };
+                      },
+                      error: function (err) {
+                          alert("Something Wrong");
+                      }
+
+                  });
+              });
+
+
+
+              $("#btnsubmit_admin").click(function () {
+
+                  var users = {};
+                  users.Name = $("#txtUName_admin").val();
+                  users.Email = $("#txtEmail_admin").val();
+                  users.Pass = $("#txtPass_admin").val();
+                  users.confpass = $("#txtPassConf").val();
+                  if (users.Name == '') {
+                      $("#txtUName_admin").focus();
+                      return false;
+                  }
+                  if (users.Pass == '') {
+                      $("#txtPass_admin").focus();
+                      return false;
+                  }
+
+                  if (users.Pass == users.confpass) {
+                      $("#txtPassConf").css("color", "default");
+                  } else {
+                      $("#txtPassConf").css("color", "red");
+                      $("#txtPassConf").focus();
+
+                      return false;
+                  }
+                  $.ajax({
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/AddUsers',
+                      method: 'post',
+                      dataType: 'text',
+                      data: { UName: users.Name,
+                          UEmail: users.Email,
+                          UPass: users.Pass
+                      },
+                      success: function (r) {
+                          alert("User Added");
+                          //Email process
+                          $.ajax({
+                              url: 'http://192.168.4.4/audit/MallServices.asmx/SendMail',
+                              method: 'post',
+                              dataType: 'text',
+                              data: { fname: 'AddUser',
+                                  message: 'User Added : ' + users.Name
+                              },
+                              success: function (r) {
+                              },
+                              error: function (err) {
+                                  alert("Problem in Sending Message");
+                              }
+
+                          });
+
+                          $("#txtUName_admin").val("");
+                          $("#txtEmail_admin").val("");
+                          $("#txtPass_admin").val("");
+                          $("#txtPassConf").val("");
+                      },
+                      error: function (err) {
+                          alert("Something Wrong");
+                      }
+
+                  });
+
+              });
+
+
+
+
+              $("#pgWeaponMaster_Save").click(function () {
+
+                  var wepon = {};
+                  wepon.Name = $("#pgWeaponMaster_Weapon").val();
+                  if (wepon.Name == '') {
+                      $("#pgWeaponMaster_Weapon").focus();
+                      return false;
+                  }
+                  $.ajax({
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/AddWeapon',
+                      method: 'post',
+                      dataType: 'text',
+                      data: { WeponName: wepon.Name
+                      },
+                      success: function (r) {
+                          alert("Wepon Master Added");
+                          $("#pgWeaponMaster_Weapon").val("");
+                      },
+                      error: function (err) {
+                          alert("Something Wrong");
+                      }
+                  });
+
+              });
+
+              $("#SecurityAgencyMaster_save").click(function () {
+
+                  var SecurityAgency = {};
+                  SecurityAgency.Name = $("#SecurityAgencyMaster_Name").val();
+                  if (SecurityAgency.Name == '') {
+                      $("#SecurityAgencyMaster_Name").focus();
+                      return false;
+                  }
+                  $.ajax({
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/AddSecurity',
+                      method: 'post',
+                      dataType: 'text',
+                      data: { SecurityAgencyName: SecurityAgency.Name
+                      },
+                      success: function (r) {
+                          alert("Security Master Added");
+                          $("#SecurityAgencyMaster_Name").val("");
+                      },
+                      error: function (err) {
+                          alert("Something Wrong");
+                      }
+                  });
+
+              });
+
+
+
+              $("#btnOk_CreatePage").click(function () {
+
+                  var forms = {};
+                  forms.Alias = $("#txtFormAlias_CreatePage").val();
+                  forms.Name = $("#txtFormName_CreatePage").val();
+                  forms.Parent = $("#txtParentFrm_CreatePage").val();
+                  forms.Page = $("#txtPgName_CreatePage").val();
+                  forms.Descr = $("#txtPgName_Descr").val();
+                  forms.Addl = $("#txtPgName_Addl").val();
+
+
+                  if (forms.Name == '') {
+                      $("#txtFormName_CreatePage").focus();
+                      return false;
+                  }
+                  if (forms.Alias == '') {
+                      $("#txtFormAlias_CreatePage").focus();
+                      return false;
+                  }
+                  if (forms.Page == '') {
+                      $("#txtPgName_CreatePage").focus();
+                      return false;
+                  }
+                  if (forms.Descr == '') {
+                      $("#txtPgName_Descr").focus();
+                      return false;
+                  }
+                  if (forms.Addl == '') {
+                      $("#txtPgName_Addl").focus();
+                      return false;
+                  }
+                  $.ajax({
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/AddFrms',
+                      method: 'post',
+                      dataType: 'text',
+                      data: { FName: forms.Name,
+                          FAlias: forms.Alias,
+                          FParent: forms.Parent,
+                          FPage: forms.Page,
+                          fdescr: forms.Descr,
+                          faddl: forms.Addl
+                      },
+                      success: function (r) {
+                          alert("Form Added");
+                          $("#txtFormAlias_CreatePage").val("");
+                          $("#txtFormName_CreatePage").val("");
+                          $("#txtParentFrm_CreatePage").val("");
+                          $("#txtPgName_CreatePage").val("");
+                          $("#txtPgName_Descr").val("");
+                          $("#txtPgName_Addl").val("");
+                      },
+                      error: function (err) {
+                          alert("Something Wrong");
+                      }
+
+                  });
+
+              });
+
+
+
+
+
+
+              $("#tanddorFryerMaster_Save").click(function () {
+
+                  var xforms = {};
+                  xforms.Res_name = $("#tanddorFryerMaster_restName").val();
+                  xforms.Floor = $("#tanddorFryerMaster_floor").val();
+                  xforms.flyer = $("#tandoor_fry-1").val();
+                  xforms.Tandoor = $("#tandoor_tan-1").val();
+
+
+                  if (xforms.Res_name == '') {
+                      $("#tanddorFryerMaster_restName").focus();
+                      return false;
+                  }
+                  if (xforms.Floor == '') {
+                      $("#tanddorFryerMaster_floor").focus();
+                      return false;
+                  }
+                  $.ajax({
+                      url: 'http://192.168.4.4/audit/MallServices.asmx/AddFryer',
+                      method: 'post',
+                      dataType: 'text',
+                      data: { RestName: xforms.Res_name,
+                          floor: xforms.Floor,
+                          flyer: xforms.flyer,
+                          tandoor: xforms.Tandoor,
+                          uname: LogDetail.LoginName
+                      },
+                      success: function (r) {
+                          alert("Record Added");
+                          //Email process
+                          $.ajax({
+                              url: 'http://192.168.4.4/audit/MallServices.asmx/SendMail',
+                              method: 'post',
+                              dataType: 'text',
+                              data: { fname: 'tanddorFryerMaster',
+                                  message: 'TANDOOR MASTER DATA SAVED'
+                              },
+                              success: function (r) {
+                              },
+                              error: function (err) {
+                                  alert("Problem in Sending Message");
+                              }
+
+                          });
+
+
+                          $("#tanddorFryerMaster_restName").val("");
+                          $("#tanddorFryerMaster_floor").val("");
+                      },
+                      error: function (err) {
+                          alert("Something Wrong");
+                      }
+
+                  });
+
+              });
+
+
+
+          });
+
+          
+      </script>
+  </head>
+  <body>
+
+      <div data-role="page" id="pageIndex">
+
+        <div data-role="header" data-position="fixed">
+             <h1>Viviana Malls</h1>
+         </div>
+
+
+
+        <div data-role="content">
+            <div class="ui-field-contain">
+                <label for="txtUName_login">User Name :</label>
+                <input type="text" name="txtUName_login" id="txtUName_login" value="" placeholder="Please Enter User Name" />
+            </div>
+            <div class="ui-field-contain">
+                <label for="txtPass_login">Password :</label>
+                <input type="password" name="txtPass_login" id="txtPass_login" value="" placeholder="Please Enter Password">
+            </div>
+            <div class="ui-field-contain">
+                <label for="btnsubmit_login"> </label>
+                <input type="button" id="btnsubmit_login" value="Submit">
+            </div>
+            <!-- <a href="#useradmin">Create New User</a> -->
+        </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+            <h4>Copy rights 2015-20</h4>
+        </div><!-- /footer -->
+    </div><!-- /pageIndex -->
+
+
+    <div data-role="page" id="startpage">
+
+        <div data-role="header" data-position="fixed">
+             <h1>Viviana Malls</h1>
+         </div>
+
+
+
+        <div data-role="content">
+
+        <div class="ui-grid-a">
+            <div class="ui-block-a"><div class="ui-bar ui-bar-a" >
+                <img id="MallSystem" src="Images/big-1.jpg" alt="Start Mall System" height="90%" width="100%" />
+                Mall System 
+             </div></div>
+            <div class="ui-block-b"><div class="ui-bar ui-bar-a"> 
+                 <img id="Img2" src="Images/big-1.jpg" alt="Start Mall System" height="90%" width="100%" />
+                Mall System 
+
+            </div></div>
+         </div><!-- /grid-a -->
+        <div class="ui-grid-a">
+            <div class="ui-block-a"><div class="ui-bar ui-bar-a" >
+                <img id="Img1" src="Images/big-1.jpg" alt="Start Mall System" height="90%" width="100%" />
+                Mall System 
+             </div></div>
+            <div class="ui-block-b"><div class="ui-bar ui-bar-a"> 
+                 <img id="Imgabout" src="Images/about.png" alt="About" height="90%" width="100%" />
+                Mall System 
+
+            </div></div>
+         </div><!-- /grid-a -->
+        </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+            <h4 id="homefoot"></h4>
+        </div><!-- /footer -->
+    </div><!-- /statpage -->
+
+
+
+
+    <!-- /swipe demo -->
+
+
+    <div data-role="page" id="demo-page" data-title="Inbox" data-url="demo-page">
+    <div data-role="header" data-position="fixed" data-theme="b">
+        <h1>Inbox</h1>
+        <a href="#demo-intro" data-rel="back" data-icon="carat-l" data-iconpos="notext">Back</a>
+        <a href="#" onclick="window.location.reload()" data-icon="back" data-iconpos="notext">Refresh</a>
+    </div><!-- /header -->
+    <div role="main" class="ui-content">
+        <ul id="list" class="touch" data-role="listview" data-icon="false" data-split-icon="delete">
+            <li>
+                <a href="#demo-mail">
+                    <h3>Avery Walker</h3>
+                    <p class="topic"><strong>Re: Dinner Tonight</strong></p>
+                    <p>Sure, let's plan on meeting at Highland Kitchen at 8:00 tonight. Can't wait! </p>
+                    <p class="ui-li-aside"><strong>4:48</strong>PM</p>
+                </a>
+                <a href="#" class="delete">Delete</a>
+            </li>
+            <li>
+                <a href="#demo-mail">
+                    <h3>Amazon.com</h3>
+                    <p class="topic"><strong>4-for-3 Books for Kids</strong></p>
+                    <p>As someone who has purchased children's books from our 4-for-3 Store, you may be interested in these featured books.</p>
+                    <p class="ui-li-aside"><strong>4:37</strong>PM</p>
+                </a>
+                <a href="#" class="delete">Delete</a>
+            </li>
+            <li>
+                <a href="#demo-mail">
+                    <h3>Mike Taylor</h3>
+                    <p class="topic"><strong>Re: This weekend in Maine</strong></p>
+                    <p>Hey little buddy, sorry but I can't make it up to vacationland this weekend. Maybe next weekend?</p>
+                    <p class="ui-li-aside"><strong>3:24</strong>PM</p>
+                </a>
+                <a href="#" class="delete">Delete</a>
+            </li>
+            <li>
+                <a href="#demo-mail">
+                    <h3>Redfin</h3>
+                    <p class="topic"><strong>Redfin listing updates for today</strong></p>
+                    <p>There are 3 updates for the home on your watchlist: 1 updated MLS listing and 2 homes under contract.</p>
+                    <p class="ui-li-aside"><strong>2:52</strong>PM</p>
+                </a>
+                <a href="#" class="delete">Delete</a>
+            </li>
+            <li>
+                <a href="#demo-mail">
+                    <h3>Angela Smith</h3>
+                    <p class="topic"><strong>Link Request</strong></p>
+                    <p>My name is Angela Smith, SEO Consultant. I've greatly enjoyed looking through your site and I was wondering if you'd be interested in providing a link</p>
+                    <p class="ui-li-aside"><strong>1:24</strong>PM</p>
+                </a>
+                <a href="#" class="delete">Delete</a>
+            </li>
+            <li>
+                <a href="#demo-mail">
+                    <h3>Stephen Weber</h3>
+                    <p class="topic"><strong>You've been invited to a meeting at Filament Group in Boston, MA</strong></p>
+                    <p>Hey Stephen, if you're available at 10am tomorrow, we've got a meeting with the jQuery team.</p>
+                    <p class="ui-li-aside"><strong>11:24</strong>AM</p>
+                </a>
+                <a href="#" class="delete">Delete</a>
+            </li>
+            <li>
+                <a href="#demo-mail">
+                    <h3>jQuery Team</h3>
+                    <p class="topic"><strong>Boston Conference Planning</strong></p>
+                    <p>In preparation for the upcoming conference in Boston, we need to start gathering a list of sponsors and speakers.</p>
+                    <p class="ui-li-aside"><strong>9:18</strong>AM</p>
+                </a>
+                <a href="#" class="delete">Delete</a>
+            </li>
+            <li>
+                <a href="#demo-mail">
+                    <h3>Avery Walker</h3>
+                    <p class="topic"><strong>Re: Dinner Tonight</strong></p>
+                    <p>Sure, let's plan on meeting at Highland Kitchen at 8:00 tonight. Can't wait! </p>
+                    <p class="ui-li-aside"><strong>4:48</strong>PM</p>
+                </a>
+                <a href="#" class="delete">Delete</a>
+            </li>
+            <li>
+                <a href="#demo-mail">
+                    <h3>Amazon.com</h3>
+                    <p class="topic"><strong>4-for-3 Books for Kids</strong></p>
+                    <p>As someone who has purchased children's books from our 4-for-3 Store, you may be interested in these featured books.</p>
+                    <p class="ui-li-aside"><strong>4:37</strong>PM</p>
+                </a>
+                <a href="#" class="delete">Delete</a>
+            </li>
+            <li>
+                <a href="#demo-mail">
+                    <h3>Mike Taylor</h3>
+                    <p class="topic"><strong>Re: This weekend in Maine</strong></p>
+                    <p>Hey little buddy, sorry but I can't make it up to vacationland this weekend. Maybe next weekend?</p>
+                    <p class="ui-li-aside"><strong>3:24</strong>PM</p>
+                </a>
+                <a href="#" class="delete">Delete</a>
+            </li>
+            <li>
+                <a href="#demo-mail">
+                    <h3>Redfin</h3>
+                    <p class="topic"><strong>Redfin listing updates for today</strong></p>
+                    <p>There are 3 updates for the home on your watchlist: 1 updated MLS listing and 2 homes under contract.</p>
+                    <p class="ui-li-aside"><strong>2:52</strong>PM</p>
+                </a>
+                <a href="#" class="delete">Delete</a>
+            </li>
+            <li>
+                <a href="#demo-mail">
+                    <h3>Angela Smith</h3>
+                    <p class="topic"><strong>Link Request</strong></p>
+                    <p>My name is Angela Smith, SEO Consultant. I've greatly enjoyed looking through your site and I was wondering if you'd be interested in providing a link</p>
+                    <p class="ui-li-aside"><strong>1:24</strong>PM</p>
+                </a>
+                <a href="#" class="delete">Delete</a>
+            </li>
+            <li>
+                <a href="#demo-mail">
+                    <h3>Stephen Weber</h3>
+                    <p class="topic"><strong>You've been invited to a meeting at Filament Group in Boston, MA</strong></p>
+                    <p>Hey Stephen, if you're available at 10am tomorrow, we've got a meeting with the jQuery team.</p>
+                    <p class="ui-li-aside"><strong>11:24</strong>AM</p>
+                </a>
+                <a href="#" class="delete">Delete</a>
+            </li>
+            <li>
+                <a href="#demo-mail">
+                    <h3>jQuery Team</h3>
+                    <p class="topic"><strong>Boston Conference Planning</strong></p>
+                    <p>In preparation for the upcoming conference in Boston, we need to start gathering a list of sponsors and speakers.</p>
+                    <p class="ui-li-aside"><strong>9:18</strong>AM</p>
+                </a>
+                <a href="#" class="delete">Delete</a>
+            </li>
+        </ul>
+    </div><!-- /content -->
+    <div id="confirm" class="ui-content" data-role="popup" data-theme="a">
+        <p id="question">Are you sure you want to delete:</p>
+        <div class="ui-grid-a">
+            <div class="ui-block-a">
+                <a id="yes" class="ui-btn ui-corner-all ui-mini ui-btn-a">Yes</a>
+            </div>
+            <div class="ui-block-b">
+                <a id="cancel" class="ui-btn ui-corner-all ui-mini ui-btn-a" >Cancel</a>
+            </div>
+        </div>
+    </div><!-- /popup -->
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+    <div data-role="page" id="AddUser">
+
+        <div data-role="header" data-position="fixed">
+             <a href="#" id="btnCancel" data-icon="arrow-l">Back</a>
+              <h2>Create User</h2>
+             <a href="#" id="btnsubmit_admin" data-icon="check">Save</a>
+         </div>
+
+
+
+        <div data-role="content">
+             <table id="tblAddUser">
+                <tr>
+                    <td>
+                        <label for="txtUName_admin">User Name : </label>
+                    </td>
+                    <td>
+                        <input id="txtUName_admin" type="text" value="" placeholder="Enter A User Name" /> </br>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                         <label for="txtEmail_admin">Email ID : </label>
+                    </td>
+                    <td>
+                        <input type="email" value="" id="txtEmail_admin" placeholder="Enter Valid Email ID"> </br>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                         <label for="txtpass_admin">*Password : </label>
+                    </td>
+                    <td>
+                        <input type="password" name="txtPass_admin" id="txtPass_admin" value="" placeholder="Password to save"></br>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                         <label for="txtPassConf">Confirm Password : </label>
+                    </td>
+                    <td>
+                        <input type="password" name="txtPassConf" id="txtPassConf" value="" placeholder="Enter Same Password As Above"> </br>
+                    </td>
+                </tr>
+             </table> 
+
+        </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+            <h4>Copy rights 2015-20</h4>
+        </div><!-- /footer -->
+    </div><!-- /AddUser -->
+
+
+
+    <div data-role="page" id="frmCreatePage">
+
+        <div data-role="header" data-position="fixed">
+             <a href="#" id="btnexit_CreatePage" data-icon="arrow-l">Back</a>
+             <h2>Create Page</h2>
+             <a href="#" id="btnOk_CreatePage" data-icon="check">Save</a>
+          </div>
+
+
+
+        <div data-role="content">
+             <table id="Table1">
+                <tr>
+                    <td>
+                        <label for="txtFormAlias_CreatePage">Form Alias : </label>
+                    </td>
+                    <td>
+                        <input id="txtFormAlias_CreatePage" type="text" value="" placeholder="Enter A Form Alias" />  
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                         <label for="txtFormName_CreatePage">Form Name : </label>
+                    </td>
+                    <td>
+                        <input type="text" value="" id="txtFormName_CreatePage" placeholder="Enter Form Name" />  
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                         <label for="txtParentFrm_CreatePage">Parent Form : </label>
+                    </td>
+                    <td>
+                        <input type="text" name="txtParentFrm_CreatePage" id="txtParentFrm_CreatePage" value="" placeholder="Parent form"/> 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                         <label for="txtPgName_CreatePage">Page Name : </label>
+                    </td>
+                    <td>
+                        <input type="text" name="txtPgName_CreatePage" id="txtPgName_CreatePage" value="" placeholder="Page Name"/>  
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                         <label for="txtPgName_Descr">Page Description to Display : </label>
+                    </td>
+                    <td>
+                        <input type="text" name="txtPgName_Descr" id="txtPgName_Descr" value="" placeholder="Page Description"/>  
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                         <label for="txtPgName_Addl">Page Additional Info : </label>
+                    </td>
+                    <td>
+                        <input type="text" name="txtPgName_Addl" id="txtPgName_Addl" value="" placeholder="Page Additional Info"/>  
+                    </td>
+                </tr>
+             </table> 
+
+        </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+            <h4>Copy rights 2015-20</h4>
+        </div><!-- /footer -->
+    </div><!-- /AddUser -->
+
+
+
+    <div data-role="page" id="UserRightsPage">
+
+        <div data-role="header" data-position="fixed">
+             <a href="#" id="userrights_back" data-icon="arrow-l">Back</a>
+             <h1>Assign User Rights</h1>
+            <a href="#" id="subSaveUserRigts" data-icon="check">Save</a>
+        </div>
+
+
+
+        <div data-role="content">
+             <table id="Table2">
+                <tr>
+                    <td>
+                        <p>Select User :</p>
+                    </td>
+                    <td>
+                        <select name = "selUser_UserRightsPage" id='selUser_UserRightsPage'> </select>
+                    </td>
+                </tr>
+             </table> 
+             <p>Select Forms to Allocate</p>
+             <div id = "tmp" >
+             </div>
+        </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+            <h4>Copy rights 2015-20</h4>
+        </div><!-- /footer -->
+    </div><!-- /UserRightsPage -->
+
+
+
+        <div data-role="page" id="ERTLOGBOOK">
+
+        <div data-role="header" data-position="fixed">
+            <a href="#" id="ertlgbook_back" data-icon="arrow-l">Back</a>
+             <h1>ERT LOG Book</h1>
+            <a href="#" id="ertLGB_save" data-icon="check">Save</a>
+            <a href="#" id="ertlgbook_edit" data-icon="grid">Edit</a>
+        </div>
+
+
+
+        <div data-role="content">
+            <table>
+            <tr>
+            <td>
+                User Name :
+            </td>
+
+            <td>
+                <p id="ertLGBook_Uname"></p>
+            </td>
+            <td>
+                Date :
+            </td>
+            <td>
+                <p id="ertLGBook_date"></p>
+            </td>
+            <td>
+                Time :
+            </td>
+            <td>
+                <p id="ertLGBook_time"></p>
+            </td>
+            </tr>
+            <tr>
+            <td>Shift</td>
+                     <td>
+                    <select name = "ertLGBook_Shift" id='ertLGBook_Shift'>
+                    </select>
+                    </td>
+             </tr>
+            </table>
+            <p>Occurance</p>
+             <textarea name="ertlgOccurance" id="ertlgOccurance" value="" placeholder="Occurance"></textarea>       
+          </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+            <h4>Copy rights 2015-20</h4>
+        </div><!-- /footer -->
+    </div><!-- /LGBookERT -->
+
+
+
+    <div data-role="page" id="CCTVLOGBOOK">
+
+        <div data-role="header" data-position="fixed">
+            <a href="#" id="cctvlgbook_back" data-icon="arrow-l">Back</a>
+             <h1>CC TV LOG Book</h1>
+            <a href="#" id="cctvLGB_save" data-icon="check">Save</a>
+            <a href="#" id="cctvlgbook_edit" data-icon="grid">Edit</a>
+        </div>
+
+
+
+        <div data-role="content">
+            <table>
+            <tr>
+            <td>
+                User Name :
+            </td>
+            <td>
+                <p id="cctvLGBook_Uname"></p>
+            </td>
+            <td>
+                Date :
+            </td>
+            <td>
+                <p id="cctvLGBook_date"></p>
+            </td>
+            <td>
+                Time :
+            </td>
+            <td>
+                <p id="cctvLGBook_time"></p>
+            </td>
+            </tr>
+            <tr>
+            <td>Shift</td>
+                     <td>
+                    <select name = "cctvLGBook_Shift" id='cctvLGBook_Shift'>
+                    </select>
+                    </td>
+             </tr>
+            </table>
+            <p>Occurance</p>
+             <textarea name="cctvlgOccurance" id="cctvlgOccurance" value="" placeholder="Occurance"></textarea>       
+          </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+            <h4>Copy rights 2015-20</h4>
+        </div><!-- /footer -->
+    </div><!-- /LGBook CCTV-->
+
+
+
+
+
+    <div data-role="page" id="LGBook">
+
+        <div data-role="header" data-position="fixed">
+            <a href="#" id="lgbook_back" data-icon="arrow-l">Back</a>
+             <h1>LOG Book</h1>
+            <a href="#" id="LGB_save" data-icon="check">Save</a>
+            <a href="#" id="lgbook_edit" data-icon="grid">Edit</a>
+        </div>
+
+
+
+        <div data-role="content">
+            <table>
+            <tr>
+            <td>
+                User Name :
+            </td>
+            <td>
+                <p id="LGBook_Uname"></p>
+            </td>
+            <td>
+                Date :
+            </td>
+            <td>
+                <p id="LGBook_date"></p>
+            </td>
+            <td>
+                Time :
+            </td>
+            <td>
+                <p id="LGBook_time"></p>
+            </td>
+            </tr>
+            <tr>
+            <td>Shift</td>
+                     <td>
+                    <select name = "LGBook_Shift" id='LGBook_Shift'>
+                    </select>
+                    </td>
+             </tr>
+            </table>
+            <p>Occurance</p>
+             <textarea name="lgOccurance" id="lgOccurance" value="" placeholder="Occurance"></textarea>       
+          </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+            <h4>Copy rights 2015-20</h4>
+        </div><!-- /footer -->
+    </div><!-- /LGBook -->
+
+
+
+    <div data-role="page" id="pgWeapon">
+
+        <div data-role="header" data-position="fixed">
+            <a href="#" id="pgWeapon_back" data-icon="arrow-l">Back</a>
+             <h1>Weapon Log Entry</h1>
+            <a href="#" id="pgWeapon_Save" data-icon="check">Save</a>
+            <a href="#" id="pgWeapon_edit" data-icon="grid">Edit</a>
+           </div>
+
+
+
+        <div data-role="content">
+                 <table>
+                <tr>
+                <td>User Name :</td>
+                <td><p id="pgWeapon_Uname"></p></td>
+                <td>Date/Time :</td>
+                <td><p id="pgWeapon_Date"></p> </td>
+                <td> <p id="pgWeapon_Time"></p></td>
+                </tr>
+                </table>
+                 <div data-role="fieldcontain">                      
+                    <label for="pgWeapon_Customer">Customer Name :</label>
+                    <input type="text" id = "pgWeapon_Customer" name = "pgWeapon_Customer" value = "" placeholder = "Customer Name" />
+                 </div>
+                 <div data-role="fieldcontain">                      
+                <label for="pgWeapon_Contact">Contact Number :</label>
+                <input type="text" id = "pgWeapon_Contact" name = "pgWeapon_Contact" value = "" placeholder = "Contact No" />
+                 </div>
+
+                 <div data-role="fieldcontain">                      
+                <label for "pgWeapon_area">Area of Juridiction :</label>
+                <input type="text" id = "pgWeapon_area" name = "pgWeapon_area" value = "" placeholder = "Area of Juridiction" />
+                 </div>
+                 <div data-role="fieldcontain">                      
+                <label for="pgWeapon_Type"></label>
+                <select name = "pgWeapon_Type" id='pgWeapon_Type'>
+                </select>
+                 </div>
+                 <div data-role="fieldcontain">      
+                 <label for="pgWeapon_Type_refresh"></label>                
+                <input type="button" id="pgWeapon_Type_refresh" data-inline="true" name = 'pgWeapon_Type_refresh' value="Refresh" />
+                 </div>
+                 <div data-role="fieldcontain">                      
+                <label for="pgWeapon_License">Weapon License :</label>
+                <input type="text" id = "pgWeapon_License" name = "pgWeapon_License" value = "" placeholder = "Weapon Licence No" />
+                 </div>
+                 <div data-role="fieldcontain">                      
+                <label for ="pgWeapon_Cartaiges">No of Cartridges : </label>
+                <input type="text" id = "pgWeapon_Cartaiges" name = "pgWeapon_Cartaiges" value = "" placeholder = "No of Cartridges" />
+                 </div>
+                 <div data-role="fieldcontain">                      
+                <label for ="pgWeapon_Rem">Remark :</label>
+                <textarea name="pgWeapon_Rem" id="pgWeapon_Rem" value="" placeholder="Remarks if any"></textarea>       
+                 </div>
+         </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+            <h4>Copy rights 2015-20</h4>
+        </div><!-- /footer -->
+    </div><!-- /pgWeapon -->
+
+
+    <div data-role="page" id="pgWeaponMaster">
+
+        <div data-role="header" data-position="fixed">
+            <a href="#" id="pgWeaponMaster_back" data-icon="arrow-l">Back</a>
+             <h1>Weapon Master</h1>
+            <a href="#" id="pgWeaponMaster_Save" data-icon="check">Save</a>
+            </div>
+
+
+
+        <div data-role="content">
+                        <label for="pgWeaponMaster_Weapon">Weapon Name :</label>
+                       <input type="text" id = "pgWeaponMaster_Weapon" name = "pgWeaponMaster_Weapon" value = "" placeholder = "Weapon Name" />
+          </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+            <h4>Copy rights 2015-20</h4>
+        </div><!-- /footer -->
+    </div><!-- /pgWeaponMaster -->
+
+
+
+    <div data-role="page" id="SecurityAgencyMaster">
+
+        <div data-role="header" data-position="fixed">
+            <a href="#" id="SecurityAgencyMaster_back" data-icon="arrow-l">Back</a>
+             <h1>Security Agency Master</h1>
+            <a href="#" id="SecurityAgencyMaster_save" data-icon="check">Save</a>
+        </div>
+
+
+
+        <div data-role="content">
+                   <label for="SecurityAgencyMaster_Name">Security Agency Name :</label>
+                    <input type="text" id = "SecurityAgencyMaster_Name" name = "SecurityAgencyMaster_Name" value = "" placeholder = "Agency Name" />
+         </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+            <h4>Copy rights 2015-20</h4>
+        </div><!-- /footer -->
+    </div><!-- /SecurityAgencyMaster -->
+
+
+
+
+    <div data-role="page" id="MystryAudit">
+
+        <div data-role="header" data-position="fixed">
+             <a href="#" id="MystryAudit_back" data-icon="arrow-l">Back</a>
+              <h2>Mystry Audit</h2>
+ 
+              <a href="#" id="MystryAudit_Save" data-icon="check">Save</a>
+             <a href="#" id="MystryAudit_Edit" data-icon="grid">Edit</a>
+              
+          </div>
+
+
+
+        <div data-role="content">
+            <table>
+                <tr>
+                    <td>
+                        User Name :
+                    </td>
+                    <td>
+                        <p id="MystryAudit_Uname"></p>
+                    </td>
+                    <td>
+                        Date :
+                    </td>
+                    <td>
+                        <p id="MystryAudit_Date"></p>
+                    </td>
+                    <td>
+                        Time :
+                    </td>
+                    <td>
+                        <p id="MystryAudit_Time"></p>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        Guard Name :
+                    </td>
+                    <td>
+                        <input type="text" id = "MystryAudit_Gname" name = "MystryAudit_Gname" value = "" placeholder = "Guard Name" />
+                     </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        Location/Entry Name :
+                    </td>
+                    <td>
+                        <input type="text" id = "MystryAudit_Location" name = "MystryAudit_Location" value = "" placeholder = "Location Name" />
+                        </select>
+                     </td>
+                </tr>
+                <tr>
+                    <td>
+                        Agency Name :
+                    </td>
+                    <td>
+                        <select name = "MystryAudit_Agency" id='MystryAudit_Agency'>
+                        </select>
+                     </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        Eye Contact :
+                    </td>
+                    <td>
+                        <select name="MystryAudit_Eye" id="MystryAudit_Eye" data-role="slider" data-theme="c">   
+                         <option value="0">No</option>    
+                         <option value="1">Yes</option>  
+                         </select>
+                     </td>
+                </tr>
+                <tr>
+                    <td>
+                        Smile :
+                    </td>
+                    <td>
+                        <select name="MystryAudit_Smile" id="MystryAudit_Smile" data-role="slider" data-theme="c">   
+                         <option value="0">No</option>    
+                         <option value="1">Yes</option>  
+                         </select>
+                     </td>
+                </tr>
+                <tr>
+                    <td>
+                        Greeting / Wishing :
+                    </td>
+                    <td>
+                        <select name="MystryAudit_Greet" id="MystryAudit_Greet" data-role="slider" data-theme="c">   
+                         <option value="0">No</option>    
+                         <option value="1">Yes</option>  
+                         </select>
+                     </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        Top to Bottom Check :
+                    </td>
+                    <td>
+                        <select name="MystryAudit_ToptoBottom" id="MystryAudit_ToptoBottom" data-role="slider" data-theme="c">   
+                         <option value="0">No</option>    
+                         <option value="1">Yes</option>  
+                         </select>
+                     </td>
+                </tr>
+                <tr>
+                    <td>
+                        Bag Check :
+                    </td>
+                    <td>
+                        <select name="MystryAudit_bagCheck" id="MystryAudit_bagCheck" data-role="slider" data-theme="c">   
+                         <option value="0">No</option>    
+                         <option value="1">Yes</option>  
+                         </select>
+                     </td>
+                </tr>
+
+
+                <tr>
+                    <td>
+                        HHMD :
+                    </td>
+                    <td>
+                        <select name="MystryAudit_HHMD" id="MystryAudit_HHMD" data-role="slider" data-theme="c">   
+                         <option value="0">No</option>    
+                         <option value="1">Yes</option>  
+                         </select>
+                     </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        Physical :
+                    </td>
+                    <td>
+                        <select name="MystryAudit_Physical" id="MystryAudit_Physical" data-role="slider" data-theme="c">   
+                         <option value="0">No</option>    
+                         <option value="1">Yes</option>  
+                         </select>
+                     </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        Say Thanks :
+                    </td>
+                    <td>
+                        <select name="MystryAudit_Thanks" id="MystryAudit_Thanks" data-role="slider" data-theme="c">   
+                         <option value="0">No</option>    
+                         <option value="1">Yes</option>  
+                         </select>
+                     </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        Result :
+                    </td>
+                    <td>
+                        <select name="MystryAudit_Result" id="MystryAudit_Result" data-role="slider" data-theme="c">   
+                         <option value="Pass">Pass</option>    
+                         <option value="Fail">Fail</option>  
+                         </select>
+                     </td>
+                </tr>
+
+                <tr>
+                <td>Remark</td>
+                <td>
+                <textarea name="MystryAudit_Rem" id="MystryAudit_Rem" value="" placeholder="Remarks if any"></textarea>       
+                </td>                 
+                </tr>
+            </table>
+          </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+            <h4>Copy rights 2015-20</h4>
+        </div><!-- /footer -->
+    </div><!-- /MystryAudit -->
+
+
+     
+	<div id="pageabout" data-role="page" data-rnc-jspage="paintPage">
+        <div data-role="header" data-position="fixed">
+             <a href="#" id="pageabout_home" data-icon="home">Home</a>
+             <h1>About ME</h1>
+        </div>
+        <div data-role="content">
+		    <section id="content" data-role="content">
+			    <!-- the size of the canvas will be dynamically changed -->
+			    <canvas id="flexBox" width="100" height="100"></canvas>
+		    </section>
+        </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#" class="ui-btn-active">One</a></li>
+                    <li><a href="#">Two</a></li>
+                </ul>
+            </div><!-- /navbar -->             
+        </div><!-- /footer -->
+    </div><!-- /MainMenu -->
+
+
+	<div id="tanddorFryerMaster" data-role="page">
+        <div data-role="header" data-position="fixed">
+             <a href="#" id="tanddorFryerMaster_back" data-icon="arrow-l">Back</a>
+             <h1>Tandoor, Fryer & Spa Master</h1>
+             <a href="#" id="tanddorFryerMaster_Save" data-icon="check">Save</a>
+
+        </div>
+        <div data-role="content">
+            <table>
+                <tr>
+                    <td>
+                        <lable>RESTAURANT</lable>            
+                        <input type = "text" id = "tanddorFryerMaster_restName" name = "tanddorFryerMaster_restName" value="" placeholder="Restaurant Name" />
+                     </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <lable>Floor</lable>            
+                        <input type = "text" id = "tanddorFryerMaster_floor" name = "tanddorFryerMaster_floor" value="" placeholder="Floor Numeric Only" />
+                     </td>
+
+                </tr>
+                <tr>
+                    <td>
+                    <label>Fryer is Available?</label>
+                        <select name="tandoorslider" id="tandoor_fry-1" data-role="slider" data-theme="c">
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    <label>Tandoor is Available?</label>
+                        <select name="tandoorslider" id="tandoor_tan-1" data-role="slider" data-theme="c">
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+         </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+   
+         </div><!-- /footer -->
+    </div><!-- /MainMenu -->
+
+
+
+
+    <div data-role="page" id="frmInciden">
+
+        <div data-role="header" data-position="fixed">
+            <a href="#" id="frmIncidence_back" data-icon="arrow-l">Back</a>
+            <h1>Viviana Malls</h1>
+            <a href="#" id="SaveInceden" data-icon="check">Save</a>
+        </div>
+        <div data-role="content">
+            <table>
+                <tr>
+                    <td>
+                        <label>Date of Incidence :</label>
+                        <input type="text" id="frmInciden_txtdate" name = "frmInciden_txtdate" value="01/01/1900"/>
+                    </td>
+                    <td>
+                       <label for="frmInciden_txttime">Time :</label>
+                       <input type="text" id="frmInciden_txttime" value="">
+                    
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Unit :</label>
+                        <input type="text" id="frmInciden_txtUnit" name = "frmInciden_txtUnit" value="" />
+                    </td>
+                    <td>
+                        <label>INCIDENT # :</label>
+                        <textarea id="frmInciden_txtincident" name = "frmInciden_txtincident"  value=""></textarea>
+                             
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Floor :</label>
+                        <input type="text" id="frmInciden_txtFloor" name = "frmInciden_txtFloor" value=""/>
+                    </td>
+                    <td>
+                        <label>Location :</label>
+                        <input type="text" id="frmInciden_txtLocation" name = "frmInciden_txtLocation" value=""/>
+                     </td>
+                </tr>
+            </table>     
+
+            <div data-role="collapsible" data-theme="b" data-content-theme="b">
+                <h4>INCIDENT REPORTED BY</h4>
+                <table>
+                    <tr>
+                        <td>
+                              <fieldset data-role="controlgroup" data-type="horizontal">
+                                 <label for= "frmInciden_Reprted_Male">Male</label>
+                                 <input type="radio" id = "frmInciden_Reprted_Male" name = "frmInciden_Reprted" value = "Male" checked="checked"/>
+                                 <label for="frmInciden_Reprted_FeMale">Female</label>                             
+                                <input type="radio" id = "frmInciden_Reprted_FeMale" name = "frmInciden_Reprted" value = "Female" />
+                               </fieldset>
+                        </td>
+                        <td>
+                            <fieldset data-role="controlgroup" data-type="horizontal">
+                                 <label for= "frmInciden_Reprted_Staff">Staff</label>
+                                 <input type="radio" id = "frmInciden_Reprted_Staff" name = "frmInciden_Reprted_type" value = "Staff" checked="checked"/>
+                                 <label for="frmInciden_Reprted_Customer">Customer</label>                             
+                                <input type="radio" id = "frmInciden_Reprted_Customer" name = "frmInciden_Reprted_type" value = "Customer" />
+                             </fieldset>
+                         </td>
+                    </tr>
+                </table> 
+ 
+                <table>
+                    <tr>
+                        <td>
+                            <label>ID :</label>
+                            <input type="text" id="frmInciden_Reprted_ID" name = "frmInciden_Reprted_ID" value=""/>
+                        </td>
+                        <td>
+                            <label>Name :</label>
+                            <input type="text" id="frmInciden_Reprted_Name" name = "frmInciden_Reprted_Name" value=""/>
+                        </td>
+                        <td>
+                            <label>Department :</label>
+                            <input type="text" id="frmInciden_Reprted_Dept" name = "frmInciden_Reprted_Dept" value=""/>
+                        </td>
+                        <td>
+                            <label>Position :</label>
+                            <input type="text" id="frmInciden_Reprted_Position" name = "frmInciden_Reprted_Position" value=""/>
+                        </td>
+                    </tr>
+                </table>
+ 
+            </div>
+            <div data-role="collapsible" data-theme="b" data-content-theme="b">
+                <h4>COMPLAINANt BY</h4>
+                <table>
+                    <tr>
+                        <td>
+                              <fieldset data-role="controlgroup" data-type="horizontal">
+                                 <label for= "frmInciden_Compl_Male">Male</label>
+                                 <input type="radio" id = "frmInciden_Compl_Male" name = "frmInciden_Compl" value = "Male" checked="checked" />
+                                 <label for="frmInciden_Compl_FeMale">Female</label>                             
+                                <input type="radio" id = "frmInciden_Compl_FeMale" name = "frmInciden_Compl" value = "Female" />
+                               </fieldset>
+                        </td>
+                        <td>
+                        <label>ID</label>
+                        <input type="text" id="frmInciden_Compl_ID" name="frmInciden_Compl_ID" value="" />
+                        </td>
+                     </tr>
+                </table> 
+
+               <table>
+                    <tr>
+                        <td>
+                            <label>First Name :</label>
+                            <input type="text" id="frmInciden_Compl_Fname" name = "frmInciden_Compl_Fname" value="" />
+                        </td>
+                        <td>
+                            <label>Middle Name :</label>
+                            <input type="text" id="frmInciden_Compl_Mname" name = "frmInciden_Compl_Mname" value=""/>
+                        </td>
+                        <td>
+                            <label>Surname :</label>
+                            <input type="text" id="frmInciden_Compl_Surname" name = "frmInciden_Compl_Surname" value="" />
+                        </td>
+                    </tr>
+                </table>
+
+ 
+                <table>
+                    <tr>
+                        <td>
+                            <label>Date of Birth</label>
+                            <input type="text" id="frmInciden_Compl_DOB" name = "frmInciden_Compl_DOB" value="01/01/1900"/>
+                        </td>
+                        <td>
+                            <label>Mobile</label>
+                            <input type="text" id="frmInciden_Compl_MOB" name = "frmInciden_Compl_MOB" value=""/>
+                        </td>
+                        <td>
+                            <label>Tel [H]</label>
+                            <input type="text" id="frmInciden_Compl_Tel" name = "frmInciden_Compl_Tel" value=""/>
+                        </td>
+                        <td>
+                            <label>Email</label>
+                            <input type="text" id="frmInciden_Compl_Email" name = "frmInciden_Compl_Email" value="" />
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                <tr><td>
+                            <label>Address</label>
+                            <textarea id="frmInciden_Compl_Addrs" name = "frmInciden_Compl_Addrs" value=""></textarea>
+                
+                </td></tr>
+                </table>
+            </div>
+
+
+            <div data-role="collapsible" data-theme="b" data-content-theme="c">
+                <h4>WITNESS BY</h4>
+                <table>
+                    <tr>
+                        <td>
+                              <fieldset data-role="controlgroup" data-type="horizontal">
+                                 <label for= "frmInciden_witness_Male">Male</label>
+                                 <input type="radio" id = "frmInciden_witness_Male" name = "frmInciden_witness" value = "Male" checked="checked"/>
+                                 <label for="frmInciden_witness_FeMale">Female</label>                             
+                                <input type="radio" id = "frmInciden_witness_FeMale" name = "frmInciden_witness" value = "Female" />
+                               </fieldset>
+                        </td>
+                        <td>
+                        <label>ID</label>
+                        <input type="text" id="frmInciden_witness_ID" name="frmInciden_witness_ID" value=""/>
+                        </td>
+                     </tr>
+                </table> 
+
+               <table>
+                    <tr>
+                        <td>
+                            <label>First Name :</label>
+                            <input type="text" id="frmInciden_witness_Fname" name = "frmInciden_witness_Fname" value=""/>
+                        </td>
+                        <td>
+                            <label>Middle Name :</label>
+                            <input type="text" id="frmInciden_witness_Mname" name = "frmInciden_witness_Mname" value=""/>
+                        </td>
+                        <td>
+                            <label>Surname :</label>
+                            <input type="text" id="frmInciden_witness_Surname" name = "frmInciden_witness_Surname" value=""/>
+                        </td>
+                    </tr>
+                </table>
+
+ 
+                <table>
+                    <tr>
+                        <td>
+                            <label>Date of Birth</label>
+                            <input type="text" id="frmInciden_witness_DOB" name = "frmInciden_witness_DOB" value="01/01/1900"/>
+                        </td>
+                        <td>
+                            <label>Mobile</label>
+                            <input type="text" id="frmInciden_witness_MOB" name = "frmInciden_witness_MOB" value=""/>
+                        </td>
+                        <td>
+                            <label>Tel [H]</label>
+                            <input type="text" id="frmInciden_witness_Tel" name = "frmInciden_witness_Tel" value=""/>
+                        </td>
+                        <td>
+                            <label>Email</label>
+                            <input type="text" id="frmInciden_witness_Email" name = "frmInciden_witness_Email" value=""/>
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                <tr><td>
+                            <label>Address</label>
+                            <textarea id="frmInciden_witness_Addrs" name = "frmInciden_witness_Addrs" value=""></textarea>
+                
+                </td></tr>
+                </table>
+            </div>
+            <div data-role="collapsible" data-theme="b" data-content-theme="b">
+                <h4>SUSPECT /ACCUSED</h4>
+                <table>
+                    <tr>
+                        <td>
+                              <fieldset data-role="controlgroup" data-type="horizontal">
+                                 <label for= "frmInciden_suspect_Male">Male</label>
+                                 <input type="radio" id = "frmInciden_suspect_Male" name = "frmInciden_suspect" value = "Male" checked="checked"/>
+                                 <label for="frmInciden_suspect_FeMale">Female</label>                             
+                                <input type="radio" id = "frmInciden_suspect_FeMale" name = "frmInciden_suspect" value = "Female" />
+                               </fieldset>
+                        </td>
+                        <td>
+                        <label>CREW ID</label>
+                        <input type="text" id="frmInciden_suspect_ID" name="frmInciden_suspect_ID" value=""/>
+                        </td>
+                     </tr>
+                </table> 
+
+               <table>
+                    <tr>
+                        <td>
+                            <label>First Name :</label>
+                            <input type="text" id="frmInciden_suspect_Fname" name = "frmInciden_suspect_Fname" value="" />
+                        </td>
+                        <td>
+                            <label>Middle Name :</label>
+                            <input type="text" id="frmInciden_suspect_Mname" name = "frmInciden_suspect_Mname" value=""/>
+                        </td>
+                        <td>
+                            <label>Surname :</label>
+                            <input type="text" id="frmInciden_suspect_Surname" name = "frmInciden_suspect_Surname" value="" />
+                        </td>
+                    </tr>
+                </table>
+
+ 
+                <table>
+                    <tr>
+                        <td>
+                            <label>Date of Birth</label>
+                            <input type="text" id="frmInciden_suspect_DOB" name = "frmInciden_suspect_DOB" value="01/01/1900"/>
+                        </td>
+                        <td>
+                            <label>Mobile</label>
+                            <input type="text" id="frmInciden_suspect_Mob" name = "frmInciden_suspect_Mob" value=""/>
+                        </td>
+                        <td>
+                            <label>Tel [H]</label>
+                            <input type="text" id="frmInciden_suspect_Tel" name = "frmInciden_suspect_Tel" value=""/>
+                        </td>
+                        <td>
+                            <label>Email</label>
+                            <input type="text" id="frmInciden_suspect_Email" name = "frmInciden_suspect_Email" value="" />
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                <tr><td>
+                            <label>Address</label>
+                            <textarea id="frmInciden_suspect_Addrs" name = "frmInciden_suspect_Addrs" value=""></textarea>
+                
+                </td></tr>
+                </table>
+                <table>
+                <tr>
+                <td>
+                            <label>Height</label>
+                            <input type="text" id="frmInciden_suspect_Height" name = "frmInciden_suspect_Height" value="" />
+                </td>
+                <td>
+                            <label>Weight</label>
+                            <input type="text" id="frmInciden_suspect_Weight" name = "frmInciden_suspect_Weight" value=""/>
+                </td>
+                </tr>
+                <tr>
+                <td>
+                            <label>Skin Complexion</label>
+                            <input type="text" id="frmInciden_suspect_Complex" name = "frmInciden_suspect_Complex" value=""/>
+                </td>
+                <td>
+                            <label>Hair</label>
+                            <input type="text" id="frmInciden_suspect_Hair" name = "frmInciden_suspect_Hair" value=""/>
+                </td>
+                </tr>
+                </table>
+                            <label>Cloting</label>
+                            <input type="text" id="frmInciden_suspect_Clot" name = "frmInciden_suspect_Clot"  value=""/>
+
+            </div>
+            
+            <div data-role="collapsible" data-theme="b" data-content-theme="b">
+                <h4>TYPE OF INCIDENT</h4>
+                <fieldset data-role="controlgroup" data-type="horizontal">
+                    <label for= "frmInciden_Inc_Sexual">Sexual</label>
+                    <input type="radio" id = "frmInciden_Inc_Sexual" name = "frmInciden_Inc" value = "Sexual"/>
+                    <label for= "frmInciden_Inc_Narcotics">Narcotics</label>
+                    <input type="radio" id = "frmInciden_Inc_Narcotics" name = "frmInciden_Inc" value = "Narcotics"/>
+                    <label for= "frmInciden_Inc_Assault">Assault</label>
+                    <input type="radio" id = "frmInciden_Inc_Assault" name = "frmInciden_Inc" value = "Assault"/>
+                    <label for= "frmInciden_Inc_Theft">Theft</label>
+                    <input type="radio" id = "frmInciden_Inc_Theft" name = "frmInciden_Inc" value = "Theft"/>
+                    <label for= "frmInciden_Inc_Misconduct">Misconduct</label>
+                    <input type="radio" id = "frmInciden_Inc_Misconduct" name = "frmInciden_Inc" value = "Misconduct"/>
+                    <label for= "frmInciden_Inc_Misc">Misc</label>
+                    <input type="radio" id = "frmInciden_Inc_Misc" name = "frmInciden_Inc" value = "Misc" checked="checked"/>
+                 </fieldset>
+                 <label>Describe Briefly: </label>
+                 <textarea id="frmInc_Rem" name = "frmInc_Rem" value="" rows=10></textarea>
+                 <table>
+                 <tr>
+                 <td>
+                 <label>ALCOHOL INVOLVED</label>
+                <fieldset data-role="controlgroup" data-type="horizontal">
+                    <label for= "frmInciden_Alcohol_Yes">Yes</label>
+                    <input type="radio" id = "frmInciden_Alcohol_Yes" name = "frmInciden_Alcohol" value = "Yes"/>
+                    <label for= "frmInciden_Alcohol_No">No</label>
+                    <input type="radio" id = "frmInciden_Alcohol_No" name = "frmInciden_Alcohol" value = "No" checked="checked"/>
+                  </fieldset>
+                 
+                 </td>
+                 <td>
+                     <label>By Who</label>
+                     <input type="text" id="frmInciden_Alcohol_descr" name = "frmInciden_Alcohol_descr" value = "" placeholder = "Please Enter data" />
+                 </td>
+                 </tr>
+                 <tr>
+                <td>
+                 <label>INJURIES</label>
+                <fieldset data-role="controlgroup" data-type="horizontal">
+                    <label for= "frmInciden_Injuries_Yes">Yes</label>
+                    <input type="radio" id = "frmInciden_Injuries_Yes" name = "frmInciden_Injuries" value = "Yes"/>
+                    <label for= "frmInciden_Injuries_No">No</label>
+                    <input type="radio" id = "frmInciden_Injuries_No" name = "frmInciden_Injuries" value = "No" checked="checked"/>
+                  </fieldset>
+                 
+                 </td>
+                 <td>
+                     <label>Describe Briefly</label>
+                     <input type="text" id="frmInciden_Injuries_Descr" name = "frmInciden_Injuries_Descr" value = " " placeholder = "Please Describe" />
+                 </td>
+                  </tr>
+                 </table>
+
+            </div>
+            <div data-role="collapsible" data-theme="b" data-content-theme="b">
+                <h4>NARRATIVE</h4>
+                 <label>Describe Briefly: </label>
+                 <textarea id="frmInc_txtNarr" name = "frmInc_txtNarr" value=" " rows=10></textarea>
+            </div>
+
+            
+        </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+            <h4>Copy rights 2015-20</h4>
+        </div><!-- /footer -->
+    </div><!-- /frmIncidence -->
+
+
+
+
+    <div data-role="page" id="AttachEmailToForm">
+
+        <div data-role="header" data-position="fixed">
+             <a href="#" id="AttachEmailToForm_back" data-icon="arrow-l">Back</a>
+             <h1>Attach Email</h1>
+             <a href="#" id="AttachEmailToForm_Save" data-icon="check" class="ui-shadow ui-btn ui-corner-all ui-btn-b ui-icon-check ui-btn-icon-left ui-btn-inline ui-mini">Save</a>
+        </div>
+        <div data-role="content">
+
+
+         
+        Attach Email    <input type="checkbox" id="AttachEmailToForm_chk" name = "AttachEmailToForm_chk" /> </br></br>
+        Select Form : <select name = "AttachEmailToForm_FormName" id='AttachEmailToForm_FormName'> </select>
+        <input type="text" id="txtEmail" name = "txtEmail" value="Enter Email Id" />
+        <input type="button" placeholder = "Insert Email" value="" id="btnEmail" name = "btnEmal" />
+         <ul id="AttachEmailToForm_ul" data-role="listview"  data-split-icon="gear" data-split-theme="a" data-inset="true">
+                 <li><a href="#">
+        <img src="../_assets/img/album-bb.jpg">
+    <h2>Broken Bells</h2>
+    <p>Broken Bells</p></a>
+        <a href="#purchase" data-rel="popup" data-position-to="window" data-transition="pop">Purchase album</a>
+    </li>
+         </ul>
+
+
+        </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+            <h4>Copy rights 2015-20</h4>
+        </div><!-- /footer -->
+    </div><!-- /MainMenu -->
+
+
+
+
+
+    <div data-role="page" id="MainMenu">
+
+        <div data-role="header" data-position="fixed">
+             <a href="#" id="MainHomePage" data-icon="home">Home</a>
+             <h1>Viviana Malls</h1>
+        </div>
+        <div data-role="content">
+        <ul id="ulMainMenu" data-role="listview" data-inset="true">
+  
+        </ul>
+
+        </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+            <h4>Copy rights 2015-20</h4>
+        </div><!-- /footer -->
+    </div><!-- /MainMenu -->
+
+
+
+    <div data-role="page" id="subMenu">
+
+        <div data-role="header" data-position="fixed">
+        <a href="#" id="submenu_Back" data-icon="arrow-l">Back</a>
+              <h1>Viviana Malls</h1>
+        </div>
+        <div data-role="content">
+        <ul id="ulsub" data-role="listview" data-inset="true">
+  
+        </ul>
+
+        </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+            <h4>Copy rights 2015-20</h4>
+        </div><!-- /footer -->
+    </div><!-- /subMenu -->
+
+   	<div id="tandoor_en" data-role="page">
+        <div data-role="header" data-position="fixed">
+             <a href="#" id="tandoor_entry_back" data-icon="arrow-l">Back</a>
+             <h1>Tandoor, Fryer & Spa Master</h1>
+             <a href="#" id="tandoor_entry_save" data-icon="check">Save</a>
+
+        </div>
+        <div data-role="content">
+            <table id = "datatandoor">a
+             </table>
+         </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+             <a href="#" id="StartTandoorEntry" data-icon="star">Start</a>
+         </div><!-- /footer -->
+    </div> <!-- /MainMenu -->
+  
+
+    <div data-role="page" id="PageAuditx">
+
+        <div data-role="header" data-position="fixed">
+             <a href="#" id="PageAudit_Back" data-icon="arrow-l">Back</a>
+
+             <h1>Viviana Malls</h1>
+             <a href="#" id="savedata" data-icon="check">Save</a>
+        
+         </div>
+
+        <div data-role="content">
+            <table>
+                <tr>
+                    <td>
+                    Date : 
+                    </td>
+                    <td>
+                    <p id = 'xdate'></p>
+                    </td>
+                </tr>
+                <tr>
+                
+                    <td>
+                    <p>Shift :</p>
+                    </td>
+                    <td>
+                    <select name = "selShift" id='selShift'>
+                    </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    <p>Survey By :</p>
+                    </td>
+                    <td>
+                    <p id = "xuser"></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    <p>Start Time</p>
+                    </td>
+                
+                    <td>
+                    <p id ="xtime"></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    <p>Select Survey</p>
+                    </td>
+                    <td>
+                    <select   name = "selectgrp" id='selectgrp'>
+                    </select>
+                    <label id='grpCode'></label>
+                    </td>
+                </tr>
+             </table>
+            <table id="datatable">
+            <tr>
+            <td>
+            </td>
+            </tr>
+            </table>
+            
+
+ 
+        </div><!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+            <h4>Copy rights 2015-20</h4>
+        </div><!-- /footer -->
+   
+   
+    </div><!-- /PageAudit -->
+
+
+
+
+
+
+
+      <link href="bootstrap/css/style.css" rel="stylesheet" type="text/css" />
+          <script src="bootstrap/js/paintPage.js" type="text/javascript"></script>
+      <script src="bootstrap/js/app.js" type="text/javascript"></script>
+
+
+   </body>
+
+
+
+</html>
